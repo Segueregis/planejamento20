@@ -9,16 +9,17 @@ import { DashboardStats } from '@/types';
 
 // Mock data for initial rendering
 const initialStats: DashboardStats = {
-  totalForklifts: 15,
-  operationalForklifts: 9,
-  stoppedForklifts: 3,
-  maintenanceForklifts: 3,
-  totalOperators: 20,
-  operatorsWithValidCertificates: 16,
-  operatorsWithWarningCertificates: 3,
-  operatorsWithExpiredCertificates: 1,
-  activeOperations: 7,
-  pendingMaintenances: 4
+  totalServiceOrders: 45,
+  waitingSchedule: 12,
+  inProgress: 8,
+  scheduled: 15,
+  priority: 5,
+  waitingPhotoEmail: 3,
+  waitingMaterial: 2,
+  totalTechnicians: 18,
+  availableTechnicians: 14,
+  busyTechnicians: 3,
+  techniciansOnMaintenance: 1
 };
 
 interface DashboardOverviewProps {
@@ -31,93 +32,83 @@ const DashboardOverview: React.FC<DashboardOverviewProps> = ({
   return (
     <section className="space-y-6">
       <div className="slide-enter" style={{ animationDelay: '0.1s' }}>
-        <h2 className="text-2xl font-semibold mb-4">Status da Frota</h2>
+        <h2 className="text-2xl font-semibold mb-4">Status das Ordens de Serviço</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <StatusCard 
-            title="Total de Empilhadeiras" 
-            value={stats.totalForklifts} 
+            title="Total de OS" 
+            value={stats.totalServiceOrders} 
             icon={Truck} 
             status="info" 
           />
           <StatusCard 
-            title="Em Operação" 
-            value={stats.operationalForklifts} 
-            icon={CheckCircle} 
-            status="success"
-            change={{ value: 12, trend: 'up' }}
-          />
-          <StatusCard 
-            title="Em Manutenção" 
-            value={stats.maintenanceForklifts} 
-            icon={Settings} 
-            status="warning" 
-          />
-          <StatusCard 
-            title="Paradas" 
-            value={stats.stoppedForklifts} 
+            title="Aguardando Programação" 
+            value={stats.waitingSchedule} 
             icon={Clock} 
+            status="warning"
+            change={{ value: 8, trend: 'up' }}
+          />
+          <StatusCard 
+            title="Em Andamento" 
+            value={stats.inProgress} 
+            icon={CheckCircle} 
+            status="success" 
+          />
+          <StatusCard 
+            title="Programado" 
+            value={stats.scheduled} 
+            icon={Calendar} 
+            status="info" 
+          />
+        </div>
+        
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
+          <StatusCard 
+            title="Prioridade" 
+            value={stats.priority} 
+            icon={AlertTriangle} 
+            status="danger" 
+          />
+          <StatusCard 
+            title="Foto Email" 
+            value={stats.waitingPhotoEmail} 
+            icon={Settings} 
             status="neutral" 
+          />
+          <StatusCard 
+            title="Aguardando Material" 
+            value={stats.waitingMaterial} 
+            icon={Fuel} 
+            status="warning" 
           />
         </div>
       </div>
 
       <div className="slide-enter" style={{ animationDelay: '0.2s' }}>
-        <h2 className="text-2xl font-semibold mb-4">Status dos Operadores</h2>
+        <h2 className="text-2xl font-semibold mb-4">Status dos Técnicos</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <StatusCard 
-            title="Total de Operadores" 
-            value={stats.totalOperators} 
+            title="Total de Técnicos" 
+            value={stats.totalTechnicians} 
             icon={Users} 
             status="info" 
           />
           <StatusCard 
-            title="ASO e NR Regulares" 
-            value={stats.operatorsWithValidCertificates} 
+            title="Disponíveis" 
+            value={stats.availableTechnicians} 
             icon={CheckCircle} 
             status="success" 
           />
           <StatusCard 
-            title="Próximo do Vencimento" 
-            value={stats.operatorsWithWarningCertificates} 
-            icon={AlertTriangle} 
+            title="Ocupados" 
+            value={stats.busyTechnicians} 
+            icon={Clock} 
             status="warning" 
           />
           <StatusCard 
-            title="ASO/NR Vencidos" 
-            value={stats.operatorsWithExpiredCertificates} 
-            icon={AlertTriangle} 
-            status="danger" 
-          />
-        </div>
-      </div>
-
-      <div className="slide-enter" style={{ animationDelay: '0.3s' }}>
-        <h2 className="text-2xl font-semibold mb-4">Operação Atual</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <StatusCard 
-            title="Operações Ativas" 
-            value={stats.activeOperations} 
-            icon={Truck} 
-            status="success"
-            change={{ value: 5, trend: 'up' }}
-          />
-          <StatusCard 
-            title="Manutenções Pendentes" 
-            value={stats.pendingMaintenances} 
+            title="Em Manutenção" 
+            value={stats.techniciansOnMaintenance} 
             icon={Settings} 
-            status="warning" 
-          />
-          <StatusCard 
-            title="Abastecimentos Hoje" 
-            value={3} 
-            icon={Fuel} 
-            status="info" 
-          />
-          <StatusCard 
-            title="ASOs a Vencer (30d)" 
-            value={4} 
-            icon={Calendar} 
-            status="warning" 
+            status="neutral" 
           />
         </div>
       </div>

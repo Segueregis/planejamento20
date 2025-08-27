@@ -3,53 +3,62 @@ import React, { useState, useEffect } from 'react';
 import Navbar from '@/components/layout/Navbar';
 import Sidebar from '@/components/layout/Sidebar';
 import DashboardOverview from '@/components/dashboard/DashboardOverview';
-import ForkliftCard from '@/components/forklift/ForkliftCard';
-import { Forklift, ForkliftStatus, ForkliftType } from '@/types';
+import ServiceOrderCard from '@/components/service-order/ServiceOrderCard';
+import { ServiceOrder, ServiceOrderStatus } from '@/types';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { cn } from '@/lib/utils';
 
 // Mock data for the dashboard
-const mockForklifts: Forklift[] = [
+const mockServiceOrders: ServiceOrder[] = [
   {
-    id: 'G001',
-    model: 'Toyota 8FGU25',
-    type: ForkliftType.GAS,
-    capacity: '2.500 kg',
-    acquisitionDate: '10/05/2022',
-    lastMaintenance: '15/09/2023',
-    status: ForkliftStatus.OPERATIONAL,
-    hourMeter: 12583,
+    id: 'OS001',
+    osPrisma: 'PRS-2024-001',
+    osMaximo: 'MAX-45678',
+    description: 'Manutenção preventiva do sistema hidráulico',
+    workshop: 'Oficina Mecânica',
+    technician: 'João Silva',
+    location: 'Setor A - Linha 1',
+    sector: 'Produção',
+    status: ServiceOrderStatus.IN_PROGRESS,
+    createdDate: '15/01/2024',
+    scheduledDate: '16/01/2024'
   },
   {
-    id: 'E002',
-    model: 'Hyster E50XN',
-    type: ForkliftType.ELECTRIC,
-    capacity: '2.250 kg',
-    acquisitionDate: '22/11/2021',
-    lastMaintenance: '30/10/2023',
-    status: ForkliftStatus.OPERATIONAL,
-    hourMeter: 8452,
+    id: 'OS002',
+    osPrisma: 'PRS-2024-002',
+    osMaximo: 'MAX-45679',
+    description: 'Troca de peças do motor elétrico',
+    workshop: 'Oficina Elétrica',
+    technician: 'Maria Santos',
+    location: 'Setor B - Linha 2',
+    sector: 'Montagem',
+    status: ServiceOrderStatus.PRIORITY,
+    createdDate: '14/01/2024'
   },
   {
-    id: 'R003',
-    model: 'Crown RR5725',
-    type: ForkliftType.RETRACTABLE,
-    capacity: '1.800 kg',
-    acquisitionDate: '04/03/2022',
-    lastMaintenance: '12/08/2023',
-    status: ForkliftStatus.MAINTENANCE,
-    hourMeter: 10974,
+    id: 'OS003',
+    osPrisma: 'PRS-2024-003',
+    osMaximo: 'MAX-45680',
+    description: 'Calibração de sensores',
+    workshop: 'Oficina Instrumentação',
+    technician: 'Carlos Oliveira',
+    location: 'Setor C - Sala de Controle',
+    sector: 'Instrumentação',
+    status: ServiceOrderStatus.WAITING_SCHEDULE,
+    createdDate: '13/01/2024'
   },
   {
-    id: 'G004',
-    model: 'Yale GLP050',
-    type: ForkliftType.GAS,
-    capacity: '2.200 kg',
-    acquisitionDate: '18/07/2022',
-    lastMaintenance: '05/11/2023',
-    status: ForkliftStatus.STOPPED,
-    hourMeter: 6782,
-  },
+    id: 'OS004',
+    osPrisma: 'PRS-2024-004',
+    osMaximo: 'MAX-45681',
+    description: 'Reparo do sistema de refrigeração',
+    workshop: 'Oficina Mecânica',
+    technician: 'Ana Costa',
+    location: 'Setor D - Compressores',
+    sector: 'Utilidades',
+    status: ServiceOrderStatus.WAITING_MATERIAL,
+    createdDate: '12/01/2024'
+  }
 ];
 
 const Index = () => {
@@ -82,7 +91,7 @@ const Index = () => {
         !isMobile && "ml-64" // Offset for sidebar when not mobile
       )}>
         <Navbar 
-          title="Dashboard" 
+          title="Painel" 
           subtitle={currentDate}
         />
         
@@ -91,18 +100,18 @@ const Index = () => {
           
           <section className="mt-8 slide-enter" style={{ animationDelay: '0.4s' }}>
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-2xl font-semibold">Empilhadeiras Em Destaque</h2>
+              <h2 className="text-2xl font-semibold">Ordens em Destaque</h2>
               <button className="text-sm text-primary hover:underline">
                 Ver todas
               </button>
             </div>
             
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              {mockForklifts.map((forklift) => (
-                <ForkliftCard 
-                  key={forklift.id} 
-                  forklift={forklift} 
-                  onClick={() => console.log(`Clicked on ${forklift.id}`)}
+              {mockServiceOrders.map((order) => (
+                <ServiceOrderCard 
+                  key={order.id} 
+                  serviceOrder={order} 
+                  onClick={() => console.log(`Clicked on ${order.id}`)}
                 />
               ))}
             </div>

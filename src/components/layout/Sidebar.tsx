@@ -45,12 +45,8 @@ const Sidebar: React.FC = () => {
   const closeSidebar = () => setIsOpen(false);
   
   const links = [
-    { to: "/", icon: LayoutDashboard, label: "Dashboard" },
-    { to: "/forklifts", icon: Truck, label: "Empilhadeiras" },
-    { to: "/operators", icon: Users, label: "Operadores" },
-    { to: "/operations", icon: ClipboardList, label: "Operações" },
-    { to: "/maintenance", icon: Settings, label: "Manutenção" },
-    { to: "/gas-supply", icon: Fuel, label: "Abastecimento" },
+    { to: "/", icon: LayoutDashboard, label: "Painel" },
+    { to: "/service-orders", icon: ClipboardList, label: "Ordens de Serviço" },
     { to: "/reports", icon: FileText, label: "Relatórios" },
   ];
 
@@ -85,7 +81,7 @@ const Sidebar: React.FC = () => {
         <div className="flex flex-col h-full">
           {/* Sidebar Header */}
           <div className="flex items-center justify-between px-4 py-5">
-            <h1 className="text-xl font-bold text-sidebar-foreground">Forklift Manager</h1>
+            <h1 className="text-xl font-bold text-sidebar-foreground">OS Manager</h1>
             {isMobile && (
               <button
                 onClick={closeSidebar}

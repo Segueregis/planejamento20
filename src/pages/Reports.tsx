@@ -72,32 +72,32 @@ const ReportsPage: React.FC = () => {
                         </Button>
                       </CollapsibleTrigger>
                     </div>
-                    <CollapsibleContent className="space-y-2">
-                      <div className="flex items-center space-x-2">
-                        <Checkbox id="operations" />
-                        <label htmlFor="operations" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                          Operações
-                        </label>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <Checkbox id="maintenance" />
-                        <label htmlFor="maintenance" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                          Manutenções
-                        </label>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <Checkbox id="gas" />
-                        <label htmlFor="gas" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                          Abastecimento
-                        </label>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <Checkbox id="operator" />
-                        <label htmlFor="operator" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                          Operadores
-                        </label>
-                      </div>
-                    </CollapsibleContent>
+                     <CollapsibleContent className="space-y-2">
+                       <div className="flex items-center space-x-2">
+                         <Checkbox id="service-orders" />
+                         <label htmlFor="service-orders" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                           Ordens de Serviço
+                         </label>
+                       </div>
+                       <div className="flex items-center space-x-2">
+                         <Checkbox id="technicians" />
+                         <label htmlFor="technicians" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                           Técnicos
+                         </label>
+                       </div>
+                       <div className="flex items-center space-x-2">
+                         <Checkbox id="workshops" />
+                         <label htmlFor="workshops" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                           Oficinas
+                         </label>
+                       </div>
+                       <div className="flex items-center space-x-2">
+                         <Checkbox id="status" />
+                         <label htmlFor="status" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                           Status das OS
+                         </label>
+                       </div>
+                     </CollapsibleContent>
                   </Collapsible>
                 </CardContent>
               </Card>
@@ -109,56 +109,56 @@ const ReportsPage: React.FC = () => {
                   <CardTitle>Relatórios Disponíveis</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {/* Report Cards */}
-                    <Card className="hover:bg-muted/50 cursor-pointer transition-colors">
-                      <CardContent className="p-4 flex gap-4 items-center">
-                        <div className="p-2 bg-primary/10 text-primary rounded-md">
-                          <FileBarChart className="w-6 h-6" />
-                        </div>
-                        <div>
-                          <h3 className="font-medium">Utilização de Empilhadeiras</h3>
-                          <p className="text-sm text-muted-foreground">Análise de horas de uso por máquina</p>
-                        </div>
-                      </CardContent>
-                    </Card>
-                    
-                    <Card className="hover:bg-muted/50 cursor-pointer transition-colors">
-                      <CardContent className="p-4 flex gap-4 items-center">
-                        <div className="p-2 bg-primary/10 text-primary rounded-md">
-                          <FileBarChart className="w-6 h-6" />
-                        </div>
-                        <div>
-                          <h3 className="font-medium">Consumo de Combustível</h3>
-                          <p className="text-sm text-muted-foreground">Consumo de gás por empilhadeira e horímetro</p>
-                        </div>
-                      </CardContent>
-                    </Card>
-                    
-                    <Card className="hover:bg-muted/50 cursor-pointer transition-colors">
-                      <CardContent className="p-4 flex gap-4 items-center">
-                        <div className="p-2 bg-primary/10 text-primary rounded-md">
-                          <FileBarChart className="w-6 h-6" />
-                        </div>
-                        <div>
-                          <h3 className="font-medium">Histórico de Manutenções</h3>
-                          <p className="text-sm text-muted-foreground">Registros de manutenções realizadas</p>
-                        </div>
-                      </CardContent>
-                    </Card>
-                    
-                    <Card className="hover:bg-muted/50 cursor-pointer transition-colors">
-                      <CardContent className="p-4 flex gap-4 items-center">
-                        <div className="p-2 bg-primary/10 text-primary rounded-md">
-                          <FileBarChart className="w-6 h-6" />
-                        </div>
-                        <div>
-                          <h3 className="font-medium">Status dos Operadores</h3>
-                          <p className="text-sm text-muted-foreground">Validade de ASO e certificações</p>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </div>
+                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                     {/* Report Cards */}
+                     <Card className="hover:bg-muted/50 cursor-pointer transition-colors">
+                       <CardContent className="p-4 flex gap-4 items-center">
+                         <div className="p-2 bg-primary/10 text-primary rounded-md">
+                           <FileBarChart className="w-6 h-6" />
+                         </div>
+                         <div>
+                           <h3 className="font-medium">OS por Status</h3>
+                           <p className="text-sm text-muted-foreground">Análise da distribuição de OS por status</p>
+                         </div>
+                       </CardContent>
+                     </Card>
+                     
+                     <Card className="hover:bg-muted/50 cursor-pointer transition-colors">
+                       <CardContent className="p-4 flex gap-4 items-center">
+                         <div className="p-2 bg-primary/10 text-primary rounded-md">
+                           <FileBarChart className="w-6 h-6" />
+                         </div>
+                         <div>
+                           <h3 className="font-medium">Performance de Técnicos</h3>
+                           <p className="text-sm text-muted-foreground">Produtividade e tempo médio por técnico</p>
+                         </div>
+                       </CardContent>
+                     </Card>
+                     
+                     <Card className="hover:bg-muted/50 cursor-pointer transition-colors">
+                       <CardContent className="p-4 flex gap-4 items-center">
+                         <div className="p-2 bg-primary/10 text-primary rounded-md">
+                           <FileBarChart className="w-6 h-6" />
+                         </div>
+                         <div>
+                           <h3 className="font-medium">Ocupação das Oficinas</h3>
+                           <p className="text-sm text-muted-foreground">Utilização e capacidade das oficinas</p>
+                         </div>
+                       </CardContent>
+                     </Card>
+                     
+                     <Card className="hover:bg-muted/50 cursor-pointer transition-colors">
+                       <CardContent className="p-4 flex gap-4 items-center">
+                         <div className="p-2 bg-primary/10 text-primary rounded-md">
+                           <FileBarChart className="w-6 h-6" />
+                         </div>
+                         <div>
+                           <h3 className="font-medium">Tempo de Execução</h3>
+                           <p className="text-sm text-muted-foreground">Tempo médio para conclusão de OS</p>
+                         </div>
+                       </CardContent>
+                     </Card>
+                   </div>
                   
                   <div className="mt-8 text-center text-muted-foreground">
                     <p>Selecione um relatório para visualizar ou exportar</p>
