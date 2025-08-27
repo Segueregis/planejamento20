@@ -20,6 +20,8 @@ const ServiceOrderCard: React.FC<ServiceOrderCardProps> = ({
   // Get status color classes
   const getStatusColor = (status: ServiceOrderStatus) => {
     switch (status) {
+      case ServiceOrderStatus.COMPLETED:
+        return 'bg-status-operational text-status-operational';
       case ServiceOrderStatus.IN_PROGRESS:
         return 'bg-status-operational text-status-operational';
       case ServiceOrderStatus.PRIORITY:
@@ -80,10 +82,16 @@ const ServiceOrderCard: React.FC<ServiceOrderCardProps> = ({
             <span className="truncate">{serviceOrder.description}</span>
           </div>
           
-          <div className="flex items-center gap-2">
-            <User className="w-3 h-3" />
-            <span>{serviceOrder.technician}</span>
-          </div>
+      <div className="space-y-2">
+        <p className="text-sm text-muted-foreground">Técnico(s)</p>
+        <div className="flex flex-wrap gap-1">
+          {serviceOrder.technicians.map((technician, index) => (
+            <Badge key={index} variant="secondary" className="text-xs">
+              {technician}
+            </Badge>
+          ))}
+        </div>
+      </div>
           
           <div className="flex items-center gap-2">
             <MapPin className="w-3 h-3" />

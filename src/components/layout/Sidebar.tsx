@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { 
-  Truck, Users, ClipboardList, Fuel, 
+  Truck, Users, ClipboardList, Fuel, Clock,
   Settings, FileText, LayoutDashboard, Menu, X
 } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -47,6 +47,7 @@ const Sidebar: React.FC = () => {
   const links = [
     { to: "/", icon: LayoutDashboard, label: "Painel" },
     { to: "/service-orders", icon: ClipboardList, label: "Ordens de Serviço" },
+    { to: "/queue", icon: Clock, label: "Fila de Programação" },
     { to: "/reports", icon: FileText, label: "Relatórios" },
   ];
 

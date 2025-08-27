@@ -8,6 +8,7 @@ import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Plus, Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
+import NewServiceOrderDialog from '@/components/service-order/NewServiceOrderDialog';
 import { useToast } from '@/hooks/use-toast';
 
 // Mock data for service orders
@@ -18,7 +19,7 @@ const mockServiceOrders: ServiceOrder[] = [
     osMaximo: 'MAX-45678',
     description: 'Manutenção preventiva do sistema hidráulico',
     workshop: 'Oficina Mecânica',
-    technician: 'João Silva',
+    technicians: ['João Silva'],
     location: 'Setor A - Linha 1',
     sector: 'Produção',
     status: ServiceOrderStatus.IN_PROGRESS,
@@ -31,7 +32,7 @@ const mockServiceOrders: ServiceOrder[] = [
     osMaximo: 'MAX-45679',
     description: 'Troca de peças do motor elétrico',
     workshop: 'Oficina Elétrica',
-    technician: 'Maria Santos',
+    technicians: ['Maria Santos'],
     location: 'Setor B - Linha 2',
     sector: 'Montagem',
     status: ServiceOrderStatus.PRIORITY,
@@ -43,7 +44,7 @@ const mockServiceOrders: ServiceOrder[] = [
     osMaximo: 'MAX-45680',
     description: 'Calibração de sensores',
     workshop: 'Oficina Instrumentação',
-    technician: 'Carlos Oliveira',
+    technicians: ['Carlos Oliveira'],
     location: 'Setor C - Sala de Controle',
     sector: 'Instrumentação',
     status: ServiceOrderStatus.WAITING_SCHEDULE,
@@ -55,7 +56,7 @@ const mockServiceOrders: ServiceOrder[] = [
     osMaximo: 'MAX-45681',
     description: 'Reparo do sistema de refrigeração',
     workshop: 'Oficina Mecânica',
-    technician: 'Ana Costa',
+    technicians: ['Ana Costa'],
     location: 'Setor D - Compressores',
     sector: 'Utilidades',
     status: ServiceOrderStatus.WAITING_MATERIAL,
@@ -73,7 +74,7 @@ const ServiceOrdersPage = () => {
   const filteredOrders = serviceOrders.filter(order =>
     order.osPrisma.toLowerCase().includes(searchTerm.toLowerCase()) ||
     order.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    order.technician.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    order.technicians.some(tech => tech.toLowerCase().includes(searchTerm.toLowerCase())) ||
     order.workshop.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -92,11 +93,8 @@ const ServiceOrdersPage = () => {
     });
   };
 
-  const handleAddServiceOrder = () => {
-    toast({
-      title: "Nova OS",
-      description: "Funcionalidade de adicionar nova ordem de serviço em desenvolvimento."
-    });
+  const handleAddServiceOrder = (newServiceOrder: ServiceOrder) => {
+    setServiceOrders(prev => [...prev, newServiceOrder]);
   };
 
   return (
@@ -127,13 +125,7 @@ const ServiceOrdersPage = () => {
               </div>
             </div>
             
-            <Button 
-              onClick={handleAddServiceOrder}
-              className="flex items-center gap-2"
-            >
-              <Plus className="w-4 h-4" />
-              Nova OS
-            </Button>
+            <NewServiceOrderDialog onAddServiceOrder={handleAddServiceOrder} />
           </div>
 
           {/* Statistics Cards */}
@@ -144,6 +136,12 @@ const ServiceOrdersPage = () => {
             </div>
             <div className="bg-card rounded-lg border p-4">
               <div className="text-2xl font-bold text-green-600">
+                {serviceOrders.filter(os => os.status === ServiceOrderStatus.COMPLETED).length}
+              </div>
+              <p className="text-sm text-muted-foreground">Concluídas</p>
+            </div>
+            <div className="bg-card rounded-lg border p-4">
+              <div className="text-2xl font-bold text-blue-600">
                 {serviceOrders.filter(os => os.status === ServiceOrderStatus.IN_PROGRESS).length}
               </div>
               <p className="text-sm text-muted-foreground">Em Andamento</p>

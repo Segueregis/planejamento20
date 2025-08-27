@@ -10,6 +10,7 @@ import { DashboardStats } from '@/types';
 // Mock data for initial rendering
 const initialStats: DashboardStats = {
   totalServiceOrders: 45,
+  completed: 12,
   waitingSchedule: 12,
   inProgress: 8,
   scheduled: 15,
@@ -40,6 +41,12 @@ const DashboardOverview: React.FC<DashboardOverviewProps> = ({
             icon={Truck} 
             status="info" 
           />
+          <StatusCard
+            title="OS Concluídas"
+            value={stats.completed}
+            icon={CheckCircle}
+            status="success"
+          />
           <StatusCard 
             title="Aguardando Programação" 
             value={stats.waitingSchedule} 
@@ -53,15 +60,15 @@ const DashboardOverview: React.FC<DashboardOverviewProps> = ({
             icon={CheckCircle} 
             status="success" 
           />
+        </div>
+        
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
           <StatusCard 
             title="Programado" 
             value={stats.scheduled} 
             icon={Calendar} 
             status="info" 
           />
-        </div>
-        
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
           <StatusCard 
             title="Prioridade" 
             value={stats.priority} 
@@ -74,6 +81,9 @@ const DashboardOverview: React.FC<DashboardOverviewProps> = ({
             icon={Settings} 
             status="neutral" 
           />
+        </div>
+        
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
           <StatusCard 
             title="Aguardando Material" 
             value={stats.waitingMaterial} 

@@ -1,6 +1,7 @@
 
 // Service Order Types
 export enum ServiceOrderStatus {
+  COMPLETED = "OS Concluídas",
   WAITING_SCHEDULE = "Aguardando Programação",
   IN_PROGRESS = "Em Andamento", 
   SCHEDULED = "Programado",
@@ -15,7 +16,7 @@ export interface ServiceOrder {
   osMaximo: string;
   description: string;
   workshop: string;
-  technician: string;
+  technicians: string[]; // Changed to support multiple technicians
   location: string;
   sector: string;
   status: ServiceOrderStatus;
@@ -54,6 +55,7 @@ export interface Workshop {
 // Dashboard Types
 export interface DashboardStats {
   totalServiceOrders: number;
+  completed: number;
   waitingSchedule: number;
   inProgress: number;
   scheduled: number;
