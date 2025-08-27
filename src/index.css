@@ -1,0 +1,183 @@
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222 33% 18%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222 33% 18%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 33% 18%;
+
+    --primary: 216 89% 58%;
+    --primary-foreground: 210 40% 98%;
+
+    --secondary: 210 20% 96%;
+    --secondary-foreground: 222 33% 18%;
+
+    --muted: 210 20% 96%;
+    --muted-foreground: 218 11% 45%;
+
+    --accent: 216 89% 96%;
+    --accent-foreground: 216 89% 46%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 216 89% 58%;
+
+    --radius: 0.75rem;
+
+    --sidebar-background: 216 89% 58%;
+    --sidebar-foreground: 210 40% 98%;
+    --sidebar-primary: 0 0% 100%;
+    --sidebar-primary-foreground: 222 33% 18%;
+    --sidebar-accent: 216 89% 46%;
+    --sidebar-accent-foreground: 210 40% 98%;
+    --sidebar-border: 216 89% 46%;
+    --sidebar-ring: 210 40% 98%;
+
+    --status-operational: 142 71% 45%;
+    --status-maintenance: 41 100% 55%;
+    --status-inactive: 0 0% 70%;
+    --status-warning: 0 84% 60%;
+  }
+
+  .dark {
+    --background: 222 33% 10%;
+    --foreground: 210 40% 98%;
+
+    --card: 222 33% 14%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 222 33% 14%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 216 89% 58%;
+    --primary-foreground: 210 40% 98%;
+
+    --secondary: 222 33% 18%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 222 33% 18%;
+    --muted-foreground: 215 20% 65%;
+
+    --accent: 216 89% 24%;
+    --accent-foreground: 216 89% 96%;
+
+    --destructive: 0 62% 50%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 222 33% 20%;
+    --input: 222 33% 20%;
+    --ring: 216 89% 58%;
+
+    --sidebar-background: 222 33% 14%;
+    --sidebar-foreground: 210 40% 98%;
+    --sidebar-primary: 216 89% 58%;
+    --sidebar-primary-foreground: 210 40% 98%;
+    --sidebar-accent: 222 33% 20%;
+    --sidebar-accent-foreground: 210 40% 98%;
+    --sidebar-border: 222 33% 20%;
+    --sidebar-ring: 216 89% 58%;
+
+    --status-operational: 142 71% 45%;
+    --status-maintenance: 41 100% 55%;
+    --status-inactive: 0 0% 50%;
+    --status-warning: 0 84% 60%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-muted-foreground/20 rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-muted-foreground/30;
+  }
+}
+
+@layer components {
+  .glass-card {
+    @apply bg-white/80 dark:bg-card/80 backdrop-blur-md border border-white/20 dark:border-white/10 shadow-glass;
+  }
+
+  .glass-card-hover {
+    @apply transition-all duration-300 hover:shadow-glass-hover hover:bg-white/90 dark:hover:bg-card/90;
+  }
+
+  .neo-card {
+    @apply bg-secondary shadow-neo transition-all duration-300;
+  }
+
+  .neo-card-active {
+    @apply shadow-neo-pressed;
+  }
+  
+  .slide-enter {
+    animation: slide-in-bottom 0.4s ease-out forwards;
+  }
+  
+  .counter-digit {
+    @apply inline-block overflow-hidden relative h-8;
+  }
+  
+  .counter-column {
+    @apply transition-transform duration-300 ease-out;
+  }
+}
+
+/* Font imports */
+@font-face {
+  font-family: 'SF Pro Display';
+  src: url('https://applesocial.s3.amazonaws.com/assets/styles/fonts/sanfrancisco/sanfranciscodisplay-regular-webfont.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'SF Pro Display';
+  src: url('https://applesocial.s3.amazonaws.com/assets/styles/fonts/sanfrancisco/sanfranciscodisplay-medium-webfont.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'SF Pro Display';
+  src: url('https://applesocial.s3.amazonaws.com/assets/styles/fonts/sanfrancisco/sanfranciscodisplay-bold-webfont.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+html {
+  font-family: 'SF Pro Display', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+}
