@@ -9,50 +9,76 @@ import { Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 
-// Mock data for queue - service orders next to be programmed
-const mockQueueOrders: ServiceOrder[] = [
+// Mock data for service orders waiting to be scheduled or coming up
+const waitingOrders: ServiceOrder[] = [
   {
     id: 'OS005',
     osPrisma: 'PRS-2024-005',
     osMaximo: 'MAX-45682',
-    description: 'Inspeção de válvulas de segurança',
-    workshop: 'Oficina Mecânica',
+    description: 'Inspeção do sistema de segurança',
+    workshop: 'Oficina Segurança',
     technicians: ['Roberto Silva'],
-    location: 'Setor E - Caldeiras',
-    sector: 'Utilidades',
+    location: 'Setor E - Portaria',
+    sector: 'Segurança',
     status: ServiceOrderStatus.WAITING_SCHEDULE,
-    createdDate: '11/01/2024'
+    createdDate: '10/01/2024'
   },
   {
     id: 'OS006',
     osPrisma: 'PRS-2024-006',
     osMaximo: 'MAX-45683',
-    description: 'Substituição de rolamentos',
-    workshop: 'Oficina Mecânica',
-    technicians: ['Fernando Costa'],
-    location: 'Setor F - Transportadores',
-    sector: 'Produção',
+    description: 'Manutenção do sistema de ar condicionado',
+    workshop: 'Oficina Refrigeração',
+    technicians: ['Luis Santos'],
+    location: 'Setor F - Escritório',
+    sector: 'Predial',
     status: ServiceOrderStatus.WAITING_SCHEDULE,
-    createdDate: '10/01/2024'
+    createdDate: '09/01/2024'
   },
   {
     id: 'OS007',
     osPrisma: 'PRS-2024-007',
     osMaximo: 'MAX-45684',
-    description: 'Calibração de instrumentos de medição',
-    workshop: 'Oficina Instrumentação',
-    technicians: ['Luiza Santos', 'Pedro Oliveira'],
+    description: 'Reparo de equipamento de laboratório',
+    workshop: 'Oficina Especializada',
+    technicians: ['Ana Costa', 'Pedro Lima'],
     location: 'Setor G - Laboratório',
     sector: 'Qualidade',
     status: ServiceOrderStatus.WAITING_SCHEDULE,
-    createdDate: '09/01/2024'
+    createdDate: '08/01/2024'
+  },
+  {
+    id: 'OS008',
+    osPrisma: 'PRS-2024-008',
+    osMaximo: 'MAX-45685',
+    description: 'Verificação do sistema de combate a incêndio',
+    workshop: 'Oficina Segurança',
+    technicians: ['Carlos Oliveira'],
+    location: 'Setor H - Industrial',
+    sector: 'Segurança',
+    status: ServiceOrderStatus.PRIORITY,
+    createdDate: '07/01/2024',
+    scheduledDate: new Date(Date.now() + 24 * 60 * 60 * 1000).toLocaleDateString('pt-BR') // Tomorrow
+  },
+  {
+    id: 'OS009',
+    osPrisma: 'PRS-2024-009',
+    osMaximo: 'MAX-45686',
+    description: 'Manutenção preventiva de motor',
+    workshop: 'Oficina Mecânica',
+    technicians: ['Maria Santos'],
+    location: 'Setor I - Produção',
+    sector: 'Produção',
+    status: ServiceOrderStatus.SCHEDULED,
+    createdDate: '06/01/2024',
+    scheduledDate: new Date(Date.now() + 72 * 60 * 60 * 1000).toLocaleDateString('pt-BR') // 3 days from now
   }
 ];
 
 const QueuePage = () => {
   const isMobile = useIsMobile();
   const { toast } = useToast();
-  const [queueOrders, setQueueOrders] = useState<ServiceOrder[]>(mockQueueOrders);
+  const [queueOrders, setQueueOrders] = useState<ServiceOrder[]>(waitingOrders);
   const [searchTerm, setSearchTerm] = useState('');
 
   // Filter service orders based on search

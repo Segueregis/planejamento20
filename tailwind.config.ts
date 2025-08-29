@@ -67,7 +67,10 @@ export default {
 					operational: 'hsl(var(--status-operational))',
 					maintenance: 'hsl(var(--status-maintenance))',
 					inactive: 'hsl(var(--status-inactive))',
-					warning: 'hsl(var(--status-warning))'
+					warning: 'hsl(var(--status-warning))',
+					danger: 'hsl(var(--status-danger))',
+					info: 'hsl(var(--status-info))',
+					neutral: 'hsl(var(--status-neutral))'
 				}
 			},
 			borderRadius: {

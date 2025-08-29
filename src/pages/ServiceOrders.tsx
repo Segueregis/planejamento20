@@ -1,17 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import Navbar from '@/components/layout/Navbar';
 import Sidebar from '@/components/layout/Sidebar';
 import ServiceOrderList from '@/components/service-order/ServiceOrderList';
+import ServiceOrderCalendar from '@/components/service-order/ServiceOrderCalendar';
 import { ServiceOrder, ServiceOrderStatus } from '@/types';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { Plus, Search } from 'lucide-react';
+import { Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import NewServiceOrderDialog from '@/components/service-order/NewServiceOrderDialog';
 import { useToast } from '@/hooks/use-toast';
+import { isSameDay } from 'date-fns';
 
-// Mock data for service orders
+// Mock data for service orders with proper dates
 const mockServiceOrders: ServiceOrder[] = [
   {
     id: 'OS001',
@@ -24,7 +26,7 @@ const mockServiceOrders: ServiceOrder[] = [
     sector: 'Produção',
     status: ServiceOrderStatus.IN_PROGRESS,
     createdDate: '15/01/2024',
-    scheduledDate: '16/01/2024'
+    scheduledDate: new Date().toLocaleDateString('pt-BR') // Today
   },
   {
     id: 'OS002',
@@ -32,11 +34,12 @@ const mockServiceOrders: ServiceOrder[] = [
     osMaximo: 'MAX-45679',
     description: 'Troca de peças do motor elétrico',
     workshop: 'Oficina Elétrica',
-    technicians: ['Maria Santos'],
+    technicians: ['Maria Santos', 'Pedro Lima'],
     location: 'Setor B - Linha 2',
     sector: 'Montagem',
     status: ServiceOrderStatus.PRIORITY,
-    createdDate: '14/01/2024'
+    createdDate: '14/01/2024',
+    scheduledDate: new Date().toLocaleDateString('pt-BR') // Today
   },
   {
     id: 'OS003',
@@ -48,7 +51,8 @@ const mockServiceOrders: ServiceOrder[] = [
     location: 'Setor C - Sala de Controle',
     sector: 'Instrumentação',
     status: ServiceOrderStatus.WAITING_SCHEDULE,
-    createdDate: '13/01/2024'
+    createdDate: '13/01/2024',
+    scheduledDate: new Date(Date.now() + 24 * 60 * 60 * 1000).toLocaleDateString('pt-BR') // Tomorrow
   },
   {
     id: 'OS004',
@@ -60,7 +64,21 @@ const mockServiceOrders: ServiceOrder[] = [
     location: 'Setor D - Compressores',
     sector: 'Utilidades',
     status: ServiceOrderStatus.WAITING_MATERIAL,
-    createdDate: '12/01/2024'
+    createdDate: '12/01/2024',
+    scheduledDate: new Date(Date.now() + 48 * 60 * 60 * 1000).toLocaleDateString('pt-BR') // Day after tomorrow
+  },
+  {
+    id: 'OS005',
+    osPrisma: 'PRS-2024-005',
+    osMaximo: 'MAX-45682',
+    description: 'Manutenção do sistema de ventilação',
+    workshop: 'Oficina Mecânica',
+    technicians: ['Roberto Silva', 'Luis Santos'],
+    location: 'Setor E - HVAC',
+    sector: 'Utilidades',
+    status: ServiceOrderStatus.SCHEDULED,
+    createdDate: '11/01/2024',
+    scheduledDate: new Date().toLocaleDateString('pt-BR') // Today
   }
 ];
 
@@ -69,14 +87,33 @@ const ServiceOrdersPage = () => {
   const { toast } = useToast();
   const [serviceOrders, setServiceOrders] = useState<ServiceOrder[]>(mockServiceOrders);
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date()); // Default to today
 
-  // Filter service orders based on search
-  const filteredOrders = serviceOrders.filter(order =>
-    order.osPrisma.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    order.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    order.technicians.some(tech => tech.toLowerCase().includes(searchTerm.toLowerCase())) ||
-    order.workshop.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // Filter service orders based on search and selected date
+  const filteredOrders = useMemo(() => {
+    let filtered = serviceOrders;
+
+    // Filter by search term
+    if (searchTerm) {
+      filtered = filtered.filter(order =>
+        order.osPrisma.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        order.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        order.technicians.some(tech => tech.toLowerCase().includes(searchTerm.toLowerCase())) ||
+        order.workshop.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
+    // Filter by selected date
+    if (selectedDate) {
+      filtered = filtered.filter(order => {
+        if (!order.scheduledDate) return false;
+        const orderDate = new Date(order.scheduledDate.split('/').reverse().join('-'));
+        return isSameDay(orderDate, selectedDate);
+      });
+    }
+
+    return filtered;
+  }, [serviceOrders, searchTerm, selectedDate]);
 
   const handleServiceOrderClick = (id: string) => {
     toast({
@@ -128,44 +165,32 @@ const ServiceOrdersPage = () => {
             <NewServiceOrderDialog onAddServiceOrder={handleAddServiceOrder} />
           </div>
 
-          {/* Statistics Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-            <div className="bg-card rounded-lg border p-4">
-              <div className="text-2xl font-bold text-primary">{serviceOrders.length}</div>
-              <p className="text-sm text-muted-foreground">Total de OS</p>
+          {/* Calendar and Service Orders Layout */}
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+            {/* Calendar */}
+            <div className="lg:col-span-1">
+              <ServiceOrderCalendar
+                serviceOrders={serviceOrders}
+                selectedDate={selectedDate}
+                onDateSelect={setSelectedDate}
+              />
             </div>
-            <div className="bg-card rounded-lg border p-4">
-              <div className="text-2xl font-bold text-green-600">
-                {serviceOrders.filter(os => os.status === ServiceOrderStatus.COMPLETED).length}
-              </div>
-              <p className="text-sm text-muted-foreground">Concluídas</p>
-            </div>
-            <div className="bg-card rounded-lg border p-4">
-              <div className="text-2xl font-bold text-blue-600">
-                {serviceOrders.filter(os => os.status === ServiceOrderStatus.IN_PROGRESS).length}
-              </div>
-              <p className="text-sm text-muted-foreground">Em Andamento</p>
-            </div>
-            <div className="bg-card rounded-lg border p-4">
-              <div className="text-2xl font-bold text-red-600">
-                {serviceOrders.filter(os => os.status === ServiceOrderStatus.PRIORITY).length}
-              </div>
-              <p className="text-sm text-muted-foreground">Prioridade</p>
-            </div>
-            <div className="bg-card rounded-lg border p-4">
-              <div className="text-2xl font-bold text-yellow-600">
-                {serviceOrders.filter(os => os.status === ServiceOrderStatus.WAITING_SCHEDULE).length}
-              </div>
-              <p className="text-sm text-muted-foreground">Aguardando</p>
+
+            {/* Service Orders List */}
+            <div className="lg:col-span-3">
+              <ServiceOrderList
+                serviceOrders={filteredOrders}
+                onServiceOrderClick={handleServiceOrderClick}
+                onDeleteServiceOrder={handleDeleteServiceOrder}
+              />
+              
+              {filteredOrders.length === 0 && selectedDate && (
+                <div className="text-center p-8 text-muted-foreground">
+                  <p>Nenhuma ordem de serviço encontrada para {selectedDate.toLocaleDateString('pt-BR')}</p>
+                </div>
+              )}
             </div>
           </div>
-
-          {/* Service Orders List */}
-          <ServiceOrderList
-            serviceOrders={filteredOrders}
-            onServiceOrderClick={handleServiceOrderClick}
-            onDeleteServiceOrder={handleDeleteServiceOrder}
-          />
         </main>
       </div>
     </div>

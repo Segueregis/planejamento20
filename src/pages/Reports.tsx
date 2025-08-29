@@ -10,11 +10,25 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { Button } from '@/components/ui/button';
 import { ChevronDown, Download, FileBarChart, Filter } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
+import ExcelImportDialog from '@/components/service-order/ExcelImportDialog';
+import { ServiceOrder } from '@/types';
+import { useToast } from '@/hooks/use-toast';
 
 const ReportsPage: React.FC = () => {
   const isMobile = useIsMobile();
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
+  const { toast } = useToast();
+
+  const handleImportOrders = (orders: ServiceOrder[]) => {
+    // In a real application, this would send the orders to your backend
+    console.log('Imported orders:', orders);
+    
+    toast({
+      title: "Ordens importadas",
+      description: `${orders.length} ordens de serviço foram adicionadas ao backlog`
+    });
+  };
 
   return (
     <div className="flex min-h-screen bg-background">
@@ -34,6 +48,7 @@ const ReportsPage: React.FC = () => {
             <h1 className="text-2xl font-bold">Relatórios do Sistema</h1>
             
             <div className="flex gap-2">
+              <ExcelImportDialog onImport={handleImportOrders} />
               <Button variant="outline" className="gap-2">
                 <Filter className="w-4 h-4" />
                 <span className="hidden sm:inline">Filtros</span>

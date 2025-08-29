@@ -48,6 +48,9 @@
     --status-maintenance: 41 100% 55%;
     --status-inactive: 0 0% 70%;
     --status-warning: 0 84% 60%;
+    --status-danger: 0 84% 60%;
+    --status-info: 216 89% 58%;
+    --status-neutral: 210 20% 65%;
   }
 
   .dark {
@@ -92,6 +95,9 @@
     --status-maintenance: 41 100% 55%;
     --status-inactive: 0 0% 50%;
     --status-warning: 0 84% 60%;
+    --status-danger: 0 84% 60%;
+    --status-info: 216 89% 58%;
+    --status-neutral: 210 20% 65%;
   }
 }
 
