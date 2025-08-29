@@ -165,31 +165,28 @@ const ServiceOrdersPage = () => {
             <NewServiceOrderDialog onAddServiceOrder={handleAddServiceOrder} />
           </div>
 
-          {/* Calendar and Service Orders Layout */}
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-            {/* Calendar */}
-            <div className="lg:col-span-1">
-              <ServiceOrderCalendar
-                serviceOrders={serviceOrders}
-                selectedDate={selectedDate}
-                onDateSelect={setSelectedDate}
-              />
-            </div>
+          {/* Calendar at top */}
+          <div className="mb-6">
+            <ServiceOrderCalendar
+              serviceOrders={serviceOrders}
+              selectedDate={selectedDate}
+              onDateSelect={setSelectedDate}
+            />
+          </div>
 
-            {/* Service Orders List */}
-            <div className="lg:col-span-3">
-              <ServiceOrderList
-                serviceOrders={filteredOrders}
-                onServiceOrderClick={handleServiceOrderClick}
-                onDeleteServiceOrder={handleDeleteServiceOrder}
-              />
-              
-              {filteredOrders.length === 0 && selectedDate && (
-                <div className="text-center p-8 text-muted-foreground">
-                  <p>Nenhuma ordem de serviço encontrada para {selectedDate.toLocaleDateString('pt-BR')}</p>
-                </div>
-              )}
-            </div>
+          {/* Service Orders List - Full width */}
+          <div className="w-full">
+            <ServiceOrderList
+              serviceOrders={filteredOrders}
+              onServiceOrderClick={handleServiceOrderClick}
+              onDeleteServiceOrder={handleDeleteServiceOrder}
+            />
+            
+            {filteredOrders.length === 0 && selectedDate && (
+              <div className="text-center p-8 text-muted-foreground">
+                <p>Nenhuma ordem de serviço encontrada para {selectedDate.toLocaleDateString('pt-BR')}</p>
+              </div>
+            )}
           </div>
         </main>
       </div>
