@@ -49,6 +49,7 @@ const Sidebar: React.FC = () => {
     { to: "/service-orders", icon: ClipboardList, label: "Ordens de Serviço" },
     { to: "/queue", icon: Clock, label: "Fila de Programação" },
     { to: "/reports", icon: FileText, label: "Relatórios" },
+    { to: "/print", icon: FileText, label: "Impressão" },
   ];
 
   return (
