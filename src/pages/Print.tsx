@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Navbar from '@/components/layout/Navbar';
-import Sidebar from '@/components/layout/Sidebar';
+import AppSidebar from '@/components/layout/Sidebar';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { cn } from '@/lib/utils';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -121,13 +121,10 @@ const PrintPage: React.FC = () => {
   );
 
   return (
-    <div className="flex min-h-screen bg-background">
-      <Sidebar />
+    <div className="flex min-h-screen w-full">
+      <AppSidebar />
       
-      <div className={cn(
-        "flex-1 flex flex-col",
-        !isMobile && "ml-64"
-      )}>
+      <div className="flex-1 flex flex-col pt-12">
         <Navbar 
           title="Impressão" 
           subtitle="Impressão de fichas de OS"

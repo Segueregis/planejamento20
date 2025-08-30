@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Navbar from '@/components/layout/Navbar';
-import Sidebar from '@/components/layout/Sidebar';
+import AppSidebar from '@/components/layout/Sidebar';
 import ServiceOrderList from '@/components/service-order/ServiceOrderList';
 import { ServiceOrder, ServiceOrderStatus } from '@/types';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -105,13 +105,10 @@ const QueuePage = () => {
   };
 
   return (
-    <div className="flex min-h-screen bg-background">
-      <Sidebar />
+    <div className="flex min-h-screen w-full">
+      <AppSidebar />
       
-      <div className={cn(
-        "flex-1 flex flex-col",
-        !isMobile && "ml-64"
-      )}>
+      <div className="flex-1 flex flex-col pt-12">
         <Navbar 
           title="Fila de Programação" 
           subtitle="Próximas ordens de serviço a serem programadas"

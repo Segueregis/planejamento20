@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Navbar from '@/components/layout/Navbar';
-import Sidebar from '@/components/layout/Sidebar';
+import AppSidebar from '@/components/layout/Sidebar';
 import DashboardOverview from '@/components/dashboard/DashboardOverview';
 import ServiceOrderCard from '@/components/service-order/ServiceOrderCard';
 import { ServiceOrder, ServiceOrderStatus } from '@/types';
@@ -83,13 +83,10 @@ const Index = () => {
   }, []);
 
   return (
-    <div className="flex min-h-screen bg-background">
-      <Sidebar />
+    <div className="flex min-h-screen w-full">
+      <AppSidebar />
       
-      <div className={cn(
-        "flex-1 flex flex-col",
-        !isMobile && "ml-64" // Offset for sidebar when not mobile
-      )}>
+      <div className="flex-1 flex flex-col pt-12">
         <Navbar 
           title="Painel" 
           subtitle={currentDate}
