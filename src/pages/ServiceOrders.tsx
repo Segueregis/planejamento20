@@ -79,19 +79,6 @@ const mockServiceOrders: ServiceOrder[] = [
     status: ServiceOrderStatus.SCHEDULED,
     createdDate: '11/01/2024',
     scheduledDate: new Date().toLocaleDateString('pt-BR') // Today
-  },
-  {
-    id: 'OS006',
-    osPrisma: 'PRS-2024-006',
-    osMaximo: 'MAX-45683',
-    description: 'Inspeção do sistema de segurança',
-    workshop: 'Oficina Elétrica',
-    technicians: ['Fernando Alves'],
-    location: 'Setor F - Portaria',
-    sector: 'Segurança',
-    status: ServiceOrderStatus.SCHEDULED,
-    createdDate: '10/01/2024',
-    scheduledDate: new Date(Date.now() + 24 * 60 * 60 * 1000).toLocaleDateString('pt-BR') // Tomorrow
   }
 ];
 

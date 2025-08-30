@@ -57,7 +57,6 @@ const ServiceOrderList: React.FC<ServiceOrderListProps> = ({
               <th className="py-3 px-4 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Técnico(s)</th>
               <th className="py-3 px-4 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Local</th>
               <th className="py-3 px-4 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Status</th>
-              <th className="py-3 px-4 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Data</th>
               <th className="py-3 px-4 text-right text-xs font-medium text-muted-foreground uppercase tracking-wider">Ações</th>
             </tr>
           </thead>
@@ -93,7 +92,6 @@ const ServiceOrderList: React.FC<ServiceOrderListProps> = ({
                     <span className="text-sm">{order.status}</span>
                   </div>
                 </td>
-                <td className="py-4 px-4 text-sm">{order.scheduledDate || order.createdDate}</td>
                 <td className="py-4 px-4 text-right">
                   {onDeleteServiceOrder && (
                     <button 
