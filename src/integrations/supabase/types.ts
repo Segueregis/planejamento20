@@ -14,7 +14,66 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      ordens_servico: {
+        Row: {
+          created_at: string | null
+          denominacao_ativo: string | null
+          denominacao_os: string | null
+          id: string
+          numero_os: string
+          observacoes_servico: string | null
+          os_cliente: string | null
+          solicitante: string | null
+          unidade_negocio: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          denominacao_ativo?: string | null
+          denominacao_os?: string | null
+          id?: string
+          numero_os: string
+          observacoes_servico?: string | null
+          os_cliente?: string | null
+          solicitante?: string | null
+          unidade_negocio?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          denominacao_ativo?: string | null
+          denominacao_os?: string | null
+          id?: string
+          numero_os?: string
+          observacoes_servico?: string | null
+          os_cliente?: string | null
+          solicitante?: string | null
+          unidade_negocio?: string | null
+        }
+        Relationships: []
+      }
+      usuarios: {
+        Row: {
+          created_at: string | null
+          email: string
+          id: string
+          nome: string
+          perfil: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          email: string
+          id?: string
+          nome: string
+          perfil?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          email?: string
+          id?: string
+          nome?: string
+          perfil?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

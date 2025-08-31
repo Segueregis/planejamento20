@@ -4,8 +4,9 @@ import { Link, useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { 
   Truck, Users, ClipboardList, Fuel, Clock,
-  Settings, FileText, LayoutDashboard, Menu, X
+  Settings, FileText, LayoutDashboard, Menu, X, LogOut
 } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
 import {
   Sidebar,
   SidebarContent,
@@ -23,6 +24,7 @@ import {
 const AppSidebar: React.FC = () => {
   const location = useLocation();
   const { open } = useSidebar();
+  const { signOut, user } = useAuth();
   
   const links = [
     { to: "/", icon: LayoutDashboard, label: "Painel" },
@@ -63,15 +65,26 @@ const AppSidebar: React.FC = () => {
       </SidebarContent>
 
       <SidebarFooter className="p-4">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-full bg-sidebar-accent flex items-center justify-center">
-            <Users className="w-4 h-4 text-sidebar-accent-foreground" />
+        <div className="space-y-2">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-full bg-sidebar-accent flex items-center justify-center">
+              <Users className="w-4 h-4 text-sidebar-accent-foreground" />
+            </div>
+            {open && (
+              <div className="flex-1">
+                <p className="text-sm font-medium text-sidebar-foreground truncate">{user?.email}</p>
+                <p className="text-xs text-sidebar-foreground/70">OS Manager v1.0.0</p>
+              </div>
+            )}
           </div>
           {open && (
-            <div>
-              <p className="text-sm font-medium text-sidebar-foreground">Administrador</p>
-              <p className="text-xs text-sidebar-foreground/70">v1.0.0</p>
-            </div>
+            <button
+              onClick={() => signOut()}
+              className="flex items-center gap-2 w-full px-2 py-1 text-xs text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent rounded-md transition-colors"
+            >
+              <LogOut className="w-4 h-4" />
+              Sair
+            </button>
           )}
         </div>
       </SidebarFooter>
