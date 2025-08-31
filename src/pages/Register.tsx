@@ -4,19 +4,21 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { useToast } from '@/hooks/use-toast';
 import { Loader2, UserPlus } from 'lucide-react';
 
-export default function Register() {
+const Register = () => {
   const [nome, setNome] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [perfil, setPerfil] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+  const [loading, setLoading] = useState(false);
+  
   const { signUp, user } = useAuth();
-  const { toast } = useToast();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -27,143 +29,151 @@ export default function Register() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
+    setError('');
+    setSuccess('');
+    setLoading(true);
 
     if (!perfil) {
-      toast({
-        title: "Erro no cadastro",
-        description: "Selecione um perfil",
-        variant: "destructive",
-      });
-      setIsLoading(false);
+      setError('Selecione um perfil');
+      setLoading(false);
       return;
     }
 
-    try {
-      const { error } = await signUp(email, password, nome, perfil);
-      
-      if (error) {
-        toast({
-          title: "Erro no cadastro",
-          description: error.message === 'User already registered' 
-            ? "Este email já está cadastrado" 
-            : error.message,
-          variant: "destructive",
-        });
+    const { error } = await signUp(email, password, nome, perfil);
+
+    if (error) {
+      if (error.message.includes('already registered')) {
+        setError('Este email já está cadastrado');
+      } else if (error.message.includes('Password should be')) {
+        setError('A senha deve ter pelo menos 6 caracteres');
       } else {
-        toast({
-          title: "Cadastro realizado com sucesso!",
-          description: "Verifique seu email para confirmar a conta",
-        });
-        navigate('/login');
+        setError('Erro ao criar conta. Tente novamente.');
       }
-    } catch (error) {
-      toast({
-        title: "Erro inesperado",
-        description: "Tente novamente mais tarde",
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
+    } else {
+      setSuccess('Conta criada com sucesso! Verifique seu email para confirmar.');
     }
+    
+    setLoading(false);
   };
+
+  const perfilOptions = [
+    { value: 'lider', label: 'Líder' },
+    { value: 'técnico', label: 'Técnico' },  
+    { value: 'supervisor', label: 'Supervisor' },
+    { value: 'planejador', label: 'Planejador' },
+    { value: 'admin', label: 'Admin' }
+  ];
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
-      <div className="w-full max-w-md">
-        <Card className="glass-card">
-          <CardHeader className="space-y-1 text-center">
-            <CardTitle className="text-2xl font-bold text-primary">OS Manager</CardTitle>
-            <CardDescription>
-              Crie sua conta para acessar o sistema
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="nome">Nome</Label>
-                <Input
-                  id="nome"
-                  type="text"
-                  placeholder="Seu nome completo"
-                  value={nome}
-                  onChange={(e) => setNome(e.target.value)}
-                  required
-                  disabled={isLoading}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="seu@email.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                  disabled={isLoading}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="password">Senha</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="Digite uma senha forte"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  disabled={isLoading}
-                  minLength={6}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="perfil">Perfil</Label>
-                <Select value={perfil} onValueChange={setPerfil} disabled={isLoading}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecione seu perfil" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="lider">Líder</SelectItem>
-                    <SelectItem value="técnico">Técnico</SelectItem>
-                    <SelectItem value="supervisor">Supervisor</SelectItem>
-                    <SelectItem value="planejador">Planejador</SelectItem>
-                    <SelectItem value="admin">Admin</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <Button
-                type="submit"
-                className="w-full"
-                disabled={isLoading}
-              >
-                {isLoading ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Cadastrando...
-                  </>
-                ) : (
-                  <>
-                    <UserPlus className="mr-2 h-4 w-4" />
-                    Cadastrar
-                  </>
-                )}
-              </Button>
-            </form>
-            <div className="mt-6 text-center">
-              <p className="text-sm text-muted-foreground">
-                Já tem uma conta?{' '}
-                <Link
-                  to="/login"
-                  className="font-medium text-primary hover:underline"
-                >
-                  Fazer login
-                </Link>
-              </p>
+      <Card className="w-full max-w-md glass-card">
+        <CardHeader className="text-center">
+          <div className="mx-auto mb-4 w-12 h-12 bg-primary rounded-lg flex items-center justify-center">
+            <UserPlus className="w-6 h-6 text-primary-foreground" />
+          </div>
+          <CardTitle className="text-2xl font-bold">Criar Conta</CardTitle>
+          <CardDescription>
+            Preencha os dados para criar sua conta
+          </CardDescription>
+        </CardHeader>
+        
+        <form onSubmit={handleSubmit}>
+          <CardContent className="space-y-4">
+            {error && (
+              <Alert variant="destructive">
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            )}
+            
+            {success && (
+              <Alert>
+                <AlertDescription>{success}</AlertDescription>
+              </Alert>
+            )}
+            
+            <div className="space-y-2">
+              <Label htmlFor="nome">Nome</Label>
+              <Input
+                id="nome"
+                type="text"
+                placeholder="Seu nome completo"
+                value={nome}
+                onChange={(e) => setNome(e.target.value)}
+                required
+                disabled={loading}
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                placeholder="seu@email.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                disabled={loading}
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="password">Senha</Label>
+              <Input
+                id="password"
+                type="password"
+                placeholder="Mínimo 6 caracteres"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                disabled={loading}
+                minLength={6}
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="perfil">Perfil</Label>
+              <Select value={perfil} onValueChange={setPerfil} disabled={loading}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecione seu perfil" />
+                </SelectTrigger>
+                <SelectContent>
+                  {perfilOptions.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </CardContent>
-        </Card>
-      </div>
+          
+          <CardFooter className="flex flex-col space-y-4">
+            <Button type="submit" className="w-full" disabled={loading}>
+              {loading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Criando conta...
+                </>
+              ) : (
+                'Criar Conta'
+              )}
+            </Button>
+            
+            <p className="text-sm text-muted-foreground text-center">
+              Já tem conta?{' '}
+              <Link 
+                to="/login" 
+                className="text-primary hover:underline font-medium"
+              >
+                Fazer login
+              </Link>
+            </p>
+          </CardFooter>
+        </form>
+      </Card>
     </div>
   );
-}
+};
+
+export default Register;

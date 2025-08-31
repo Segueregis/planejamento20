@@ -4,16 +4,17 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { useToast } from '@/hooks/use-toast';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Loader2, LogIn } from 'lucide-react';
 
-export default function Login() {
+const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  
   const { signIn, user } = useAuth();
-  const { toast } = useToast();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -24,105 +25,96 @@ export default function Login() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
+    setError('');
+    setLoading(true);
 
-    try {
-      const { error } = await signIn(email, password);
-      
-      if (error) {
-        toast({
-          title: "Erro no login",
-          description: error.message === 'Invalid login credentials' 
-            ? "Email ou senha incorretos" 
-            : error.message,
-          variant: "destructive",
-        });
-      } else {
-        toast({
-          title: "Login realizado com sucesso!",
-          description: "Bem-vindo ao OS Manager",
-        });
-        navigate('/');
-      }
-    } catch (error) {
-      toast({
-        title: "Erro inesperado",
-        description: "Tente novamente mais tarde",
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
+    const { error } = await signIn(email, password);
+
+    if (error) {
+      setError(error.message === 'Invalid login credentials' 
+        ? 'Email ou senha incorretos' 
+        : 'Erro ao fazer login. Tente novamente.');
+    } else {
+      navigate('/');
     }
+    
+    setLoading(false);
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
-      <div className="w-full max-w-md">
-        <Card className="glass-card">
-          <CardHeader className="space-y-1 text-center">
-            <CardTitle className="text-2xl font-bold text-primary">OS Manager</CardTitle>
-            <CardDescription>
-              Entre com sua conta para acessar o sistema
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="seu@email.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                  disabled={isLoading}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="password">Senha</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="Digite sua senha"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  disabled={isLoading}
-                />
-              </div>
-              <Button
-                type="submit"
-                className="w-full"
-                disabled={isLoading}
-              >
-                {isLoading ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Entrando...
-                  </>
-                ) : (
-                  <>
-                    <LogIn className="mr-2 h-4 w-4" />
-                    Entrar
-                  </>
-                )}
-              </Button>
-            </form>
-            <div className="mt-6 text-center">
-              <p className="text-sm text-muted-foreground">
-                Não tem uma conta?{' '}
-                <Link
-                  to="/register"
-                  className="font-medium text-primary hover:underline"
-                >
-                  Criar conta
-                </Link>
-              </p>
+      <Card className="w-full max-w-md glass-card">
+        <CardHeader className="text-center">
+          <div className="mx-auto mb-4 w-12 h-12 bg-primary rounded-lg flex items-center justify-center">
+            <LogIn className="w-6 h-6 text-primary-foreground" />
+          </div>
+          <CardTitle className="text-2xl font-bold">Bem-vindo</CardTitle>
+          <CardDescription>
+            Entre com suas credenciais para acessar o sistema
+          </CardDescription>
+        </CardHeader>
+        
+        <form onSubmit={handleSubmit}>
+          <CardContent className="space-y-4">
+            {error && (
+              <Alert variant="destructive">
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            )}
+            
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                placeholder="seu@email.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                disabled={loading}
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="password">Senha</Label>
+              <Input
+                id="password"
+                type="password"
+                placeholder="Sua senha"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                disabled={loading}
+              />
             </div>
           </CardContent>
-        </Card>
-      </div>
+          
+          <CardFooter className="flex flex-col space-y-4">
+            <Button type="submit" className="w-full" disabled={loading}>
+              {loading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Entrando...
+                </>
+              ) : (
+                'Entrar'
+              )}
+            </Button>
+            
+            <p className="text-sm text-muted-foreground text-center">
+              Não tem conta?{' '}
+              <Link 
+                to="/register" 
+                className="text-primary hover:underline font-medium"
+              >
+                Criar conta
+              </Link>
+            </p>
+          </CardFooter>
+        </form>
+      </Card>
     </div>
   );
-}
+};
+
+export default Login;
