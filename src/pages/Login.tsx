@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -14,14 +14,9 @@ const Login = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   
-  const { signIn, user } = useAuth();
-  const navigate = useNavigate();
+  const { signIn } = useAuth();
 
-  useEffect(() => {
-    if (user) {
-      navigate('/');
-    }
-  }, [user, navigate]);
+  // Remove navigation useEffect - let ProtectedRoute handle it
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,9 +29,8 @@ const Login = () => {
       setError(error.message === 'Invalid login credentials' 
         ? 'Email ou senha incorretos' 
         : 'Erro ao fazer login. Tente novamente.');
-    } else {
-      navigate('/');
     }
+    // Don't manually navigate - let ProtectedRoute handle it
     
     setLoading(false);
   };
