@@ -20,17 +20,27 @@ const Login = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log('Login attempt started', { email });
     setError('');
     setLoading(true);
 
-    const { error } = await signIn(email, password);
+    try {
+      console.log('Calling signIn function...');
+      const { error } = await signIn(email, password);
+      console.log('SignIn response:', { error });
 
-    if (error) {
-      setError(error.message === 'Invalid login credentials' 
-        ? 'Email ou senha incorretos' 
-        : 'Erro ao fazer login. Tente novamente.');
+      if (error) {
+        console.error('Login error:', error);
+        setError(error.message === 'Invalid login credentials' 
+          ? 'Email ou senha incorretos' 
+          : 'Erro ao fazer login. Tente novamente.');
+      } else {
+        console.log('Login successful!');
+      }
+    } catch (err) {
+      console.error('Login exception:', err);
+      setError('Erro inesperado ao fazer login.');
     }
-    // Don't manually navigate - let ProtectedRoute handle it
     
     setLoading(false);
   };
