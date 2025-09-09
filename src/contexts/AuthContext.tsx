@@ -2,27 +2,25 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 
-export type AppRole = 'admin' | 'lider' | 'tecnico' | 'operador';
+export type UserRole = 'admin' | 'lider' | 'tecnico' | 'operador';
 
 interface UserProfile {
   id: string;
   email: string;
   nome: string;
   perfil: string;
-  created_at: string;
+  roles?: UserRole[];
 }
 
 interface AuthContextType {
   user: User | null;
   session: Session | null;
-  profile: UserProfile | null;
-  roles: AppRole[];
+  userProfile: UserProfile | null;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<{ error: any }>;
-  signUp: (email: string, password: string, nome: string, perfil: AppRole) => Promise<{ error: any }>;
+  signUp: (email: string, password: string, nome: string, perfil: UserRole) => Promise<{ error: any }>;
   signOut: () => Promise<void>;
-  hasRole: (role: AppRole) => boolean;
-  isAdmin: () => boolean;
+  hasRole: (role: UserRole) => boolean;
   refreshProfile: () => Promise<void>;
 }
 
@@ -39,17 +37,15 @@ export const useAuth = () => {
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
-  const [profile, setProfile] = useState<UserProfile | null>(null);
-  const [roles, setRoles] = useState<AppRole[]>([]);
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Function to fetch user profile and roles
   const fetchUserProfile = async (userId: string) => {
     try {
       console.log('Fetching user profile for:', userId);
       
       // Fetch user profile
-      const { data: profileData, error: profileError } = await supabase
+      const { data: profile, error: profileError } = await supabase
         .from('usuarios')
         .select('*')
         .eq('id', userId)
@@ -68,16 +64,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       if (rolesError) {
         console.error('Error fetching roles:', rolesError);
-        return;
       }
 
-      console.log('Profile data:', profileData);
-      console.log('Roles data:', rolesData);
+      const roles = rolesData?.map(r => r.role as UserRole) || [];
+      
+      const userProfileData: UserProfile = {
+        ...profile,
+        roles
+      };
 
-      setProfile(profileData);
-      setRoles(rolesData?.map(r => r.role) || []);
+      console.log('User profile loaded:', userProfileData);
+      setUserProfile(userProfileData);
     } catch (error) {
-      console.error('Exception fetching user data:', error);
+      console.error('Exception fetching user profile:', error);
+    }
+  };
+
+  const refreshProfile = async () => {
+    if (user?.id) {
+      await fetchUserProfile(user.id);
     }
   };
 
@@ -87,18 +92,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // Set up auth state listener first
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
+        console.log('Auth state changed:', event, session?.user?.id);
+        
         if (mounted) {
-          console.log('Auth state changed:', { event, userId: session?.user?.id });
           setSession(session);
           setUser(session?.user ?? null);
           
           if (session?.user) {
-            // Fetch profile and roles when user is authenticated
+            // Fetch user profile and roles
             await fetchUserProfile(session.user.id);
           } else {
-            // Clear profile and roles when user is not authenticated
-            setProfile(null);
-            setRoles([]);
+            setUserProfile(null);
           }
           
           setLoading(false);
@@ -109,7 +113,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // Then check for existing session
     supabase.auth.getSession().then(async ({ data: { session } }) => {
       if (mounted) {
-        console.log('Initial session check:', { userId: session?.user?.id });
+        console.log('Initial session check:', session?.user?.id);
         setSession(session);
         setUser(session?.user ?? null);
         
@@ -142,7 +146,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const signUp = async (email: string, password: string, nome: string, perfil: AppRole) => {
+  const signUp = async (email: string, password: string, nome: string, perfil: UserRole) => {
     console.log('AuthContext signUp called', { email, nome, perfil });
     const redirectUrl = `${window.location.origin}/`;
     
@@ -158,6 +162,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           }
         }
       });
+      
       console.log('Supabase signUp response:', { error, data });
       return { error };
     } catch (err) {
@@ -167,41 +172,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const signOut = async () => {
-    console.log('Signing out user');
-    const { error } = await supabase.auth.signOut();
-    if (error) {
-      console.error('Error signing out:', error);
-    }
-    // Clear local state
-    setProfile(null);
-    setRoles([]);
+    console.log('Signing out...');
+    setUserProfile(null);
+    await supabase.auth.signOut();
   };
 
-  const hasRole = (role: AppRole): boolean => {
-    return roles.includes(role);
-  };
-
-  const isAdmin = (): boolean => {
-    return hasRole('admin');
-  };
-
-  const refreshProfile = async (): Promise<void> => {
-    if (user) {
-      await fetchUserProfile(user.id);
-    }
+  const hasRole = (role: UserRole): boolean => {
+    return userProfile?.roles?.includes(role) || false;
   };
 
   const value = {
     user,
     session,
-    profile,
-    roles,
+    userProfile,
     loading,
     signIn,
     signUp,
     signOut,
     hasRole,
-    isAdmin,
     refreshProfile,
   };
 

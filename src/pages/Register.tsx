@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth, AppRole } from '@/contexts/AuthContext';
+import { useAuth, UserRole } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -13,7 +13,7 @@ const Register = () => {
   const [nome, setNome] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [perfil, setPerfil] = useState<AppRole>('operador');
+  const [perfil, setPerfil] = useState<UserRole>('operador');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
@@ -56,7 +56,7 @@ const Register = () => {
     setLoading(false);
   };
 
-  const perfilOptions: { value: AppRole; label: string }[] = [
+  const perfilOptions: { value: UserRole; label: string }[] = [
     { value: 'admin', label: 'Administrador' },
     { value: 'lider', label: 'Líder' },
     { value: 'tecnico', label: 'Técnico' },
@@ -132,7 +132,7 @@ const Register = () => {
             
             <div className="space-y-2">
               <Label htmlFor="perfil">Perfil</Label>
-              <Select value={perfil} onValueChange={(value) => setPerfil(value as AppRole)} disabled={loading}>
+              <Select value={perfil} onValueChange={(value) => setPerfil(value as UserRole)} disabled={loading}>
                 <SelectTrigger>
                   <SelectValue placeholder="Selecione seu perfil" />
                 </SelectTrigger>

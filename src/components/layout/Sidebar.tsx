@@ -24,7 +24,7 @@ import {
 const AppSidebar: React.FC = () => {
   const location = useLocation();
   const { open } = useSidebar();
-  const { signOut, user } = useAuth();
+  const { signOut, userProfile } = useAuth();
   
   const links = [
     { to: "/", icon: LayoutDashboard, label: "Painel" },
@@ -72,8 +72,20 @@ const AppSidebar: React.FC = () => {
             </div>
             {open && (
               <div className="flex-1">
-                <p className="text-sm font-medium text-sidebar-foreground truncate">{user?.email}</p>
-                <p className="text-xs text-sidebar-foreground/70">OS Manager v1.0.0</p>
+                <p className="text-sm font-medium text-sidebar-foreground truncate">
+                  {userProfile?.nome || userProfile?.email}
+                </p>
+                <div className="flex flex-wrap gap-1 mt-1">
+                  {userProfile?.roles?.map((role) => (
+                    <span
+                      key={role}
+                      className="text-xs px-1.5 py-0.5 bg-sidebar-accent text-sidebar-accent-foreground rounded"
+                    >
+                      {role}
+                    </span>
+                  ))}
+                </div>
+                <p className="text-xs text-sidebar-foreground/70 mt-1">OS Manager v1.0.0</p>
               </div>
             )}
           </div>
