@@ -17,6 +17,7 @@ export type Database = {
       ordens_servico: {
         Row: {
           created_at: string | null
+          created_by: string
           denominacao_ativo: string | null
           denominacao_os: string | null
           id: string
@@ -28,6 +29,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string | null
+          created_by: string
           denominacao_ativo?: string | null
           denominacao_os?: string | null
           id?: string
@@ -39,6 +41,7 @@ export type Database = {
         }
         Update: {
           created_at?: string | null
+          created_by?: string
           denominacao_ativo?: string | null
           denominacao_os?: string | null
           id?: string
