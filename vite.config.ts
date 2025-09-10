@@ -5,14 +5,14 @@ import { componentTagger } from "lovable-tagger";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
-  server: {
-    host: "::",
-    port: 8080,
-    allowedHosts: [
-      // Domínio gerado pelo Replit
-      "1277f5cc-2462-4744-8266-44f78791809d-00-2kcg5l42s7b8r.riker.replit.dev"
-    ]
-  },
+ server: {
+  host: "::",
+  port: 8080,
+  allowedHosts: [
+    "31289348-4f34-4c47-9b31-2088a083efbf-00-1j9un6v7sn3ol.picard.replit.dev"
+  ]
+},
+
   plugins: [
     react(),
     mode === "development" && componentTagger(),
