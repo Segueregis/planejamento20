@@ -11,6 +11,8 @@
     "preview": "vite preview"
     "db:push": "drizzle-kit push",
     "db:migrate": "drizzle-kit migrate:dev"
+    "backend": "tsx server/index.ts",
+  "start:all": "concurrently \"npm run backend\" \"npm run dev\""
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
