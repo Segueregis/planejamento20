@@ -8,9 +8,9 @@
     "build": "vite build",
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
     "db:push": "drizzle-kit push",
-    "db:migrate": "drizzle-kit migrate:dev"
+    "db:migrate": "drizzle-kit migrate:dev",
     "backend": "tsx server/index.ts",
   "start:all": "concurrently \"npm run backend\" \"npm run dev\""
   },
