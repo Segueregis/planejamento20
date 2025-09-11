@@ -27,16 +27,22 @@ const Login = () => {
       const { error } = await signIn(email, password);
 
       if (error) {
-        setError(error.message === 'Invalid login credentials' 
-          ? 'Email ou senha incorretos' 
-          : 'Erro ao fazer login. Tente novamente.');
+        console.log('Login error details:', error);
+        if (error.message === 'Invalid login credentials') {
+          setError('Email ou senha incorretos. Verifique suas credenciais e tente novamente.');
+        } else if (error.message === 'Email not confirmed') {
+          setError('Email não confirmado. Verifique sua caixa de entrada.');
+        } else {
+          setError(`Erro ao fazer login: ${error.message}`);
+        }
+        setLoading(false);
       }
+      // Se não houver erro, o AuthContext vai gerenciar o loading
     } catch (err) {
       console.error('Login exception:', err);
       setError('Erro inesperado ao fazer login.');
+      setLoading(false);
     }
-    
-    setLoading(false);
   };
 
   return (
