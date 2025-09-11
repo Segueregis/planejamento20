@@ -9,9 +9,7 @@ export default defineConfig(({ mode }) => ({
     host: "::",
     port: 8080,
     // Permite qualquer host que termine com ".replit.dev"
-    allowedHosts: [
-      /^.*\.replit\.dev$/
-    ]
+    allowedHosts: true
   },
   plugins: [
     react(),
