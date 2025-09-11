@@ -8,8 +8,10 @@ interface ProtectedRouteProps {
 }
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
-  const { user, loading } = useAuth();
+  const { user, loading, userProfile } = useAuth();
   const location = useLocation();
+
+  console.log('ProtectedRoute state:', { hasUser: !!user, loading, hasProfile: !!userProfile, location: location.pathname });
 
   if (loading) {
     return (
@@ -20,9 +22,11 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   }
 
   if (!user) {
+    console.log('No user found, redirecting to login');
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
+  console.log('User authenticated, rendering children');
   return <>{children}</>;
 };
 
