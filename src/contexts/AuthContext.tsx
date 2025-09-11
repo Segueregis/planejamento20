@@ -42,23 +42,38 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const fetchUserProfile = async (userId: string) => {
     try {
+      console.log('Starting fetchUserProfile for userId:', userId);
+      
       // Fetch user profile
+      console.log('Fetching user profile from usuarios table...');
       const { data: profile, error: profileError } = await supabase
         .from('usuarios')
         .select('*')
         .eq('id', userId)
         .maybeSingle();
 
+      console.log('Profile query result:', { profile, profileError });
+
       if (profileError) {
         console.error('Error fetching profile:', profileError);
+        setLoading(false);
+        return;
+      }
+
+      if (!profile) {
+        console.error('No profile found for user:', userId);
+        setLoading(false);
         return;
       }
 
       // Fetch user roles
+      console.log('Fetching user roles from user_roles table...');
       const { data: rolesData, error: rolesError } = await supabase
         .from('user_roles')
         .select('role')
         .eq('user_id', userId);
+
+      console.log('Roles query result:', { rolesData, rolesError });
 
       if (rolesError) {
         console.error('Error fetching roles:', rolesError);
@@ -73,8 +88,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       console.log('Setting user profile:', userProfileData);
       setUserProfile(userProfileData);
+      console.log('Profile set successfully');
     } catch (error) {
       console.error('Exception fetching user profile:', error);
+      setLoading(false);
     }
   };
 
