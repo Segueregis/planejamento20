@@ -56,13 +56,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       if (profileError) {
         console.error('Error fetching profile:', profileError);
-        setLoading(false);
         return;
       }
 
       if (!profile) {
         console.error('No profile found for user:', userId);
-        setLoading(false);
         return;
       }
 
@@ -91,6 +89,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       console.log('Profile set successfully');
     } catch (error) {
       console.error('Exception fetching user profile:', error);
+    } finally {
       setLoading(false);
     }
   };
@@ -136,10 +135,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setUser(session?.user ?? null);
         
         if (session?.user) {
-          await fetchUserProfile(session.user.id);
+          setTimeout(() => {
+            if (session?.user?.id) {
+              fetchUserProfile(session.user.id);
+            }
+          }, 0);
+        } else {
+          setLoading(false);
         }
-        
-        setLoading(false);
       }
     });
 
