@@ -106,7 +106,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     
     // Set up auth state listener first
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
+      (event, session) => {
         console.log('Auth state change:', { event, hasUser: !!session?.user, userId: session?.user?.id });
         if (mounted) {
           setSession(session);
@@ -114,8 +114,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           
           if (session?.user) {
             console.log('Fetching profile for user:', session.user.id);
-            // Fetch user profile and roles
-            await fetchUserProfile(session.user.id);
+            // Defer profile fetch to avoid async work in the callback
+            setTimeout(() => {
+              if (session?.user?.id) {
+                fetchUserProfile(session.user.id);
+              }
+            }, 0);
           } else {
             setUserProfile(null);
           }
