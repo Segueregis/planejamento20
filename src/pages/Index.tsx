@@ -4,9 +4,10 @@ import Navbar from '@/components/layout/Navbar';
 import AppSidebar from '@/components/layout/Sidebar';
 import DashboardOverview from '@/components/dashboard/DashboardOverview';
 import ServiceOrderCard from '@/components/service-order/ServiceOrderCard';
-import { ServiceOrder, ServiceOrderStatus } from '@/types';
+import { ServiceOrder, ServiceOrderStatus, DashboardStats } from '@/types';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { cn } from '@/lib/utils';
+import { useSupabaseRealtime } from '@/hooks/useSupabaseRealtime';
 
 // Mock data for the dashboard
 const mockServiceOrders: ServiceOrder[] = [
@@ -64,6 +65,38 @@ const mockServiceOrders: ServiceOrder[] = [
 const Index = () => {
   const isMobile = useIsMobile();
   const [currentDate, setCurrentDate] = useState<string>('');
+  const { serviceOrders: realtimeOrders, loading } = useSupabaseRealtime();
+
+  // Transform Supabase data to match ServiceOrder interface
+  const serviceOrders: ServiceOrder[] = realtimeOrders.map(order => ({
+    id: order.id,
+    osPrisma: order.numero_os,
+    osMaximo: order.numero_os_cliente || '',
+    description: order.denominacao_os || order.denominacao_ativo || '',
+    workshop: order.denominacao_oficina || 'Não especificado',
+    technicians: order.denominacao_solicitante ? [order.denominacao_solicitante] : ['Não especificado'],
+    location: order.ativo || 'Não especificado',
+    sector: order.denominacao_unidade_negocio || 'Não especificado',
+    status: order.status as ServiceOrderStatus || ServiceOrderStatus.WAITING_SCHEDULE,
+    createdDate: new Date(order.created_at).toLocaleDateString('pt-BR'),
+    scheduledDate: new Date().toLocaleDateString('pt-BR')
+  }));
+
+  // Calculate dashboard stats from real data
+  const dashboardStats: DashboardStats = {
+    totalServiceOrders: serviceOrders.length,
+    completed: serviceOrders.filter(order => order.status === ServiceOrderStatus.COMPLETED).length,
+    waitingSchedule: serviceOrders.filter(order => order.status === ServiceOrderStatus.WAITING_SCHEDULE).length,
+    inProgress: serviceOrders.filter(order => order.status === ServiceOrderStatus.IN_PROGRESS).length,
+    scheduled: serviceOrders.filter(order => order.status === ServiceOrderStatus.SCHEDULED).length,
+    priority: serviceOrders.filter(order => order.status === ServiceOrderStatus.PRIORITY).length,
+    waitingPhotoEmail: serviceOrders.filter(order => order.status === ServiceOrderStatus.WAITING_PHOTO_EMAIL).length,
+    waitingMaterial: serviceOrders.filter(order => order.status === ServiceOrderStatus.WAITING_MATERIAL).length,
+    totalTechnicians: 0, // TODO: Implement technicians table
+    availableTechnicians: 0,
+    busyTechnicians: 0,
+    techniciansOnMaintenance: 0
+  };
   
   useEffect(() => {
     // Set current date in Brazilian format
@@ -93,7 +126,7 @@ const Index = () => {
         />
         
         <main className="flex-1 px-6 py-6">
-          <DashboardOverview />
+          <DashboardOverview stats={dashboardStats} />
           
           <section className="mt-8 slide-enter" style={{ animationDelay: '0.4s' }}>
             <div className="flex justify-between items-center mb-4">
@@ -104,13 +137,24 @@ const Index = () => {
             </div>
             
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              {mockServiceOrders.map((order) => (
-                <ServiceOrderCard 
-                  key={order.id} 
-                  serviceOrder={order} 
-                  onClick={() => console.log(`Clicked on ${order.id}`)}
-                />
-              ))}
+              {loading ? (
+                <div className="col-span-full text-center p-8">
+                  <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
+                  <p className="text-muted-foreground">Carregando ordens de serviço...</p>
+                </div>
+              ) : serviceOrders.length === 0 ? (
+                <div className="col-span-full text-center p-8 text-muted-foreground">
+                  <p>Nenhuma ordem de serviço encontrada. Importe dados do Excel para começar.</p>
+                </div>
+              ) : (
+                serviceOrders.slice(0, 4).map((order) => (
+                  <ServiceOrderCard 
+                    key={order.id} 
+                    serviceOrder={order} 
+                    onClick={() => console.log(`Clicked on ${order.id}`)}
+                  />
+                ))
+              )}
             </div>
           </section>
         </main>

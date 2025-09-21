@@ -4,7 +4,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { 
   Truck, Users, ClipboardList, Fuel, Clock,
-  Settings, FileText, LayoutDashboard, Menu, X, LogOut
+  Settings, FileText, LayoutDashboard, Menu, X, LogOut, Printer
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import {
@@ -31,7 +31,7 @@ const AppSidebar: React.FC = () => {
     { to: "/service-orders", icon: ClipboardList, label: "Ordens de Serviço" },
     { to: "/queue", icon: Clock, label: "Fila de Programação" },
     { to: "/reports", icon: FileText, label: "Relatórios" },
-    { to: "/print", icon: FileText, label: "Impressão" },
+    { to: "/simple-print", icon: Printer, label: "Imprimir Lista" },
   ];
 
   const isActive = (path: string) => location.pathname === path;

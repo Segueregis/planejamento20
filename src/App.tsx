@@ -13,6 +13,7 @@ import ServiceOrdersPage from "./pages/ServiceOrders";
 import QueuePage from "./pages/Queue";
 import ReportsPage from "./pages/Reports";
 import PrintPage from "./pages/Print";
+import SimplePrintPage from "./pages/SimplePrint";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 
@@ -41,6 +42,7 @@ const App = () => (
                       <Route path="/queue" element={<QueuePage />} />
                       <Route path="/reports" element={<ReportsPage />} />
                       <Route path="/print" element={<PrintPage />} />
+                      <Route path="/simple-print" element={<SimplePrintPage />} />
                       <Route path="*" element={<NotFound />} />
                     </Routes>
                   </div>

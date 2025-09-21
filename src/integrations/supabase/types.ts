@@ -16,39 +16,63 @@ export type Database = {
     Tables: {
       ordens_servico: {
         Row: {
+          ativo: string | null
           created_at: string | null
           created_by: string
           denominacao_ativo: string | null
+          denominacao_oficina: string | null
           denominacao_os: string | null
+          denominacao_solicitante: string | null
+          denominacao_unidade_negocio: string | null
           id: string
           numero_os: string
+          numero_os_cliente: string | null
+          observacoes_avaliacao_servico: string | null
           observacoes_servico: string | null
           os_cliente: string | null
           solicitante: string | null
+          status: string | null
+          tipo_solicitacao_servico: string | null
           unidade_negocio: string | null
         }
         Insert: {
+          ativo?: string | null
           created_at?: string | null
           created_by: string
           denominacao_ativo?: string | null
+          denominacao_oficina?: string | null
           denominacao_os?: string | null
+          denominacao_solicitante?: string | null
+          denominacao_unidade_negocio?: string | null
           id?: string
           numero_os: string
+          numero_os_cliente?: string | null
+          observacoes_avaliacao_servico?: string | null
           observacoes_servico?: string | null
           os_cliente?: string | null
           solicitante?: string | null
+          status?: string | null
+          tipo_solicitacao_servico?: string | null
           unidade_negocio?: string | null
         }
         Update: {
+          ativo?: string | null
           created_at?: string | null
           created_by?: string
           denominacao_ativo?: string | null
+          denominacao_oficina?: string | null
           denominacao_os?: string | null
+          denominacao_solicitante?: string | null
+          denominacao_unidade_negocio?: string | null
           id?: string
           numero_os?: string
+          numero_os_cliente?: string | null
+          observacoes_avaliacao_servico?: string | null
           observacoes_servico?: string | null
           os_cliente?: string | null
           solicitante?: string | null
+          status?: string | null
+          tipo_solicitacao_servico?: string | null
           unidade_negocio?: string | null
         }
         Relationships: []

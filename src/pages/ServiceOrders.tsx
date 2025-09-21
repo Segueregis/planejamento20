@@ -3,6 +3,7 @@ import Navbar from '@/components/layout/Navbar';
 import AppSidebar from '@/components/layout/Sidebar';
 import ServiceOrderList from '@/components/service-order/ServiceOrderList';
 import ServiceOrderCalendar from '@/components/service-order/ServiceOrderCalendar';
+import ExcelImportDialog from '@/components/service-order/ExcelImportDialog';
 import { ServiceOrder, ServiceOrderStatus } from '@/types';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { cn } from '@/lib/utils';
@@ -12,6 +13,8 @@ import { Input } from '@/components/ui/input';
 import NewServiceOrderDialog from '@/components/service-order/NewServiceOrderDialog';
 import { useToast } from '@/hooks/use-toast';
 import { isSameDay } from 'date-fns';
+import { useSupabaseRealtime } from '@/hooks/useSupabaseRealtime';
+import { supabase } from '@/integrations/supabase/client';
 
 // Mock data for service orders with proper dates
 const mockServiceOrders: ServiceOrder[] = [
@@ -98,9 +101,24 @@ const mockServiceOrders: ServiceOrder[] = [
 const ServiceOrdersPage = () => {
   const isMobile = useIsMobile();
   const { toast } = useToast();
-  const [serviceOrders, setServiceOrders] = useState<ServiceOrder[]>(mockServiceOrders);
+  const { serviceOrders: realtimeOrders, loading, error, refreshData } = useSupabaseRealtime();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date()); // Default to today
+
+  // Transform Supabase data to match ServiceOrder interface
+  const serviceOrders: ServiceOrder[] = realtimeOrders.map(order => ({
+    id: order.id,
+    osPrisma: order.numero_os,
+    osMaximo: order.numero_os_cliente || '',
+    description: order.denominacao_os || order.denominacao_ativo || '',
+    workshop: order.denominacao_oficina || 'Não especificado',
+    technicians: order.denominacao_solicitante ? [order.denominacao_solicitante] : ['Não especificado'],
+    location: order.ativo || 'Não especificado',
+    sector: order.denominacao_unidade_negocio || 'Não especificado',
+    status: order.status as ServiceOrderStatus || ServiceOrderStatus.WAITING_SCHEDULE,
+    createdDate: new Date(order.created_at).toLocaleDateString('pt-BR'),
+    scheduledDate: new Date().toLocaleDateString('pt-BR') // TODO: Add scheduled_date field to database
+  }));
 
   // Filter service orders based on search and selected date
   const filteredOrders = useMemo(() => {
@@ -135,16 +153,38 @@ const ServiceOrdersPage = () => {
     });
   };
 
-  const handleDeleteServiceOrder = (id: string) => {
-    setServiceOrders(prev => prev.filter(order => order.id !== id));
-    toast({
-      title: "Ordem deletada",
-      description: "A ordem de serviço foi removida com sucesso."
-    });
+  const handleDeleteServiceOrder = async (id: string) => {
+    try {
+      // Delete from Supabase - Realtime will handle UI update
+      const { error } = await supabase.from('ordens_servico').delete().eq('id', id);
+      
+      if (error) throw error;
+      
+      toast({
+        title: "Ordem deletada",
+        description: "A ordem de serviço foi removida com sucesso."
+      });
+    } catch (error: any) {
+      console.error('Error deleting service order:', error);
+      toast({
+        title: "Erro",
+        description: "Não foi possível deletar a ordem de serviço.",
+        variant: "destructive"
+      });
+    }
   };
 
   const handleAddServiceOrder = (newServiceOrder: ServiceOrder) => {
-    setServiceOrders(prev => [...prev, newServiceOrder]);
+    // This is handled by NewServiceOrderDialog and Realtime
+    refreshData();
+  };
+
+  const handleImportComplete = () => {
+    refreshData();
+    toast({
+      title: "Dados atualizados",
+      description: "A lista foi atualizada com os dados importados."
+    });
   };
 
   return (
@@ -172,7 +212,10 @@ const ServiceOrdersPage = () => {
               </div>
             </div>
             
-            <NewServiceOrderDialog onAddServiceOrder={handleAddServiceOrder} />
+            <div className="flex gap-2">
+              <ExcelImportDialog onImport={handleImportComplete} />
+              <NewServiceOrderDialog onAddServiceOrder={handleAddServiceOrder} />
+            </div>
           </div>
 
           {/* Calendar at top */}
@@ -186,16 +229,36 @@ const ServiceOrdersPage = () => {
 
           {/* Service Orders List - Full width */}
           <div className="w-full">
-            <ServiceOrderList
-              serviceOrders={filteredOrders}
-              onServiceOrderClick={handleServiceOrderClick}
-              onDeleteServiceOrder={handleDeleteServiceOrder}
-            />
-            
-            {filteredOrders.length === 0 && selectedDate && (
-              <div className="text-center p-8 text-muted-foreground">
-                <p>Nenhuma ordem de serviço encontrada para {selectedDate.toLocaleDateString('pt-BR')}</p>
+            {loading ? (
+              <div className="text-center p-8">
+                <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
+                <p className="text-muted-foreground">Carregando ordens de serviço...</p>
               </div>
+            ) : error ? (
+              <div className="text-center p-8 text-red-500">
+                <p>Erro ao carregar dados: {error}</p>
+                <Button onClick={refreshData} className="mt-4">Tentar novamente</Button>
+              </div>
+            ) : (
+              <>
+                <ServiceOrderList
+                  serviceOrders={filteredOrders}
+                  onServiceOrderClick={handleServiceOrderClick}
+                  onDeleteServiceOrder={handleDeleteServiceOrder}
+                />
+                
+                {filteredOrders.length === 0 && selectedDate && (
+                  <div className="text-center p-8 text-muted-foreground">
+                    <p>Nenhuma ordem de serviço encontrada para {selectedDate.toLocaleDateString('pt-BR')}</p>
+                  </div>
+                )}
+                
+                {filteredOrders.length === 0 && !selectedDate && serviceOrders.length === 0 && (
+                  <div className="text-center p-8 text-muted-foreground">
+                    <p>Nenhuma ordem de serviço cadastrada. Importe dados do Excel ou crie uma nova ordem.</p>
+                  </div>
+                )}
+              </>
             )}
           </div>
         </main>
