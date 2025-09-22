@@ -79,7 +79,7 @@ const ExcelImportDialog: React.FC<ExcelImportDialogProps> = ({ onImport }) => {
       }));
 
       // Filter valid records (must have numero_os)
-      const validData = excelData.filter(item => item.numero_os && item.numero_os.trim());
+      const validData = excelData.filter(item => item.numero_os && String(item.numero_os).trim());
 
       if (!validData.length) {
         throw new Error('Nenhum registro válido encontrado. Verifique se a coluna "Número OS" está preenchida.');
