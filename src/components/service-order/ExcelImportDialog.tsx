@@ -87,11 +87,17 @@ const ExcelImportDialog: React.FC<ExcelImportDialogProps> = ({ onImport }) => {
 
       console.log('Valid Excel data:', validData);
 
-      // Call sync function
+      // Call sync function (ensure we have the latest authenticated user id)
+      const { data: userResp } = await supabase.auth.getUser();
+      const userId = userResp?.user?.id || user?.id;
+      if (!userId) {
+        throw new Error('Usuário não autenticado. Faça login novamente.');
+      }
+
       const { data, error } = await supabase.functions.invoke('sync-excel-data', {
         body: {
           data: validData,
-          userId: user.id
+          userId
         }
       });
 
