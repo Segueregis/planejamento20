@@ -65,17 +65,17 @@ const ExcelImportDialog: React.FC<ExcelImportDialogProps> = ({ onImport }) => {
 
       // Map Excel columns to database fields
       const excelData = rawData.map((row: any) => ({
-        numero_os: row['Número OS'] || row['numero_os'] || '',
-        numero_os_cliente: row['OS Cliente'] || row['numero_os_cliente'] || '',
-        denominacao_os: row['Denominação OS'] || row['denominacao_os'] || '',
-        tipo_solicitacao_servico: row['Tipo Solic. de Serviço'] || row['tipo_solicitacao_servico'] || '',
-        denominacao_oficina: row['Denominação Oficina'] || row['denominacao_oficina'] || '',
+        numero_os: row['Número OS'] || row['numero_os'] || row['NUMERO OS'] || row['Nº OS'] || '',
+        numero_os_cliente: row['OS Cliente'] || row['numero_os_cliente'] || row['OS_CLIENTE'] || '',
+        denominacao_os: row['Denominação OS'] || row['Descrição OS'] || row['denominacao_os'] || '',
+        tipo_solicitacao_servico: row['Tipo Solic. de Serviço'] || row['Tipo Solic. de Servico'] || row['tipo_solicitacao_servico'] || '',
+        denominacao_oficina: row['Denominação Oficina'] || row['Oficina'] || row['denominacao_oficina'] || '',
         ativo: row['Ativo'] || row['ativo'] || '',
         denominacao_ativo: row['Denominação Ativo'] || row['denominacao_ativo'] || '',
-        observacoes_avaliacao_servico: row['Observações da Avaliação de Serviço'] || row['observacoes_avaliacao_servico'] || '',
-        denominacao_solicitante: row['Denominação do Solicitante'] || row['denominacao_solicitante'] || '',
+        observacoes_avaliacao_servico: row['Observações da Avaliação de Serviço'] || row['OBSERVAÇÕES DA AVALIAÇÃO DE SERVIÇO'] || row['observacoes_avaliacao_servico'] || '',
+        denominacao_solicitante: row['Denominação do Solicitante'] || row['Solicitante'] || row['denominacao_solicitante'] || '',
         denominacao_unidade_negocio: row['Denominação Unidade Negócio'] || row['denominacao_unidade_negocio'] || '',
-        status: row['Status'] || row['status'] || 'Aguardando Programação'
+        status: row['Estado OS'] || row['Denominação Estado OS'] || row['Status'] || row['status'] || 'Aguardando Programação'
       }));
 
       // Filter valid records (must have numero_os)

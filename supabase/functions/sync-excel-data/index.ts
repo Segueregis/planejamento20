@@ -31,25 +31,34 @@ serve(async (req) => {
   try {
     // Initialize Supabase client
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-    
-    const supabase = createClient(supabaseUrl, supabaseServiceKey);
+    const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
+    const authHeader = req.headers.get('Authorization') || '';
+    if (!authHeader) {
+      console.error('Missing Authorization header');
+      return new Response(JSON.stringify({ success: false, error: 'Unauthorized: missing Authorization header' }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 401 });
+    }
+    const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+      global: { headers: { Authorization: authHeader } }
+    });
 
-    // Get request body
-    const { data: excelData, userId } = await req.json();
-    console.log('Received data:', { excelDataLength: excelData?.length, userId });
-
+    // Get request body and authenticated user
+    const body = await req.json();
+    const excelData = body?.excelData || body?.data;
     if (!excelData || !Array.isArray(excelData)) {
       throw new Error('Invalid Excel data format');
     }
 
-    if (!userId) {
-      throw new Error('User ID is required');
+    const { data: userResp, error: userErr } = await supabase.auth.getUser();
+    if (userErr || !userResp?.user) {
+      console.error('Auth error or missing user', userErr);
+      return new Response(JSON.stringify({ success: false, error: 'Unauthorized: invalid or expired session' }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 401 });
     }
+    const userId = userResp.user.id;
+    console.log('Received data:', { excelDataLength: excelData?.length, userId });
 
     // Transform Excel data to match database structure
     const transformedData: any[] = excelData.map((row: ExcelServiceOrder) => ({
-      numero_os: row.numero_os,
+      numero_os: String((row as any).numero_os ?? '').trim(),
       numero_os_cliente: row.numero_os_cliente || '',
       denominacao_os: row.denominacao_os || '',
       tipo_solicitacao_servico: row.tipo_solicitacao_servico || '',
@@ -136,12 +145,13 @@ serve(async (req) => {
       }
     );
 
-  } catch (error) {
-    console.error('Function error:', error);
+  } catch (err) {
+    console.error('Function error:', err);
+    const message = err instanceof Error ? err.message : String(err);
     return new Response(
       JSON.stringify({
         success: false,
-        error: error.message
+        error: message
       }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
