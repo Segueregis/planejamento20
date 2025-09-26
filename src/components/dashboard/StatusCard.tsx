@@ -10,7 +10,8 @@ const StatusCard: React.FC<StatusCardProps> = ({
   value,
   icon: Icon,
   status = 'info',
-  change
+  change,
+  onClick
 }) => {
   const statusClasses = {
     success: "bg-status-operational/10 text-status-operational border-status-operational/30",
@@ -29,10 +30,14 @@ const StatusCard: React.FC<StatusCardProps> = ({
   };
 
   return (
-    <div className={cn(
-      "glass-card glass-card-hover p-4 rounded-xl overflow-hidden relative",
-      status && statusClasses[status]
-    )}>
+    <div 
+      className={cn(
+        "glass-card glass-card-hover p-4 rounded-xl overflow-hidden relative",
+        onClick && "cursor-pointer hover:scale-105 transition-transform",
+        status && statusClasses[status]
+      )}
+      onClick={onClick}
+    >
       <div className="flex items-start justify-between">
         <div>
           <h3 className="text-sm font-medium mb-1">{title}</h3>

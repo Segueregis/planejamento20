@@ -1,12 +1,13 @@
 
 import React, { useState, useEffect } from 'react';
-import Navbar from '@/components/layout/Navbar';
 import AppSidebar from '@/components/layout/Sidebar';
+import Navbar from '@/components/layout/Navbar';
 import DashboardOverview from '@/components/dashboard/DashboardOverview';
 import ServiceOrderCard from '@/components/service-order/ServiceOrderCard';
-import { ServiceOrder, ServiceOrderStatus, DashboardStats } from '@/types';
+import ServiceOrderFullTableDialog from '@/components/service-order/ServiceOrderFullTableDialog';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { cn } from '@/lib/utils';
+import { ServiceOrder, ServiceOrderStatus, DashboardStats } from '@/types';
 import { useSupabaseRealtime } from '@/hooks/useSupabaseRealtime';
 
 // Mock data for the dashboard
@@ -65,6 +66,7 @@ const mockServiceOrders: ServiceOrder[] = [
 const Index = () => {
   const isMobile = useIsMobile();
   const [currentDate, setCurrentDate] = useState<string>('');
+  const [showAllOrdersDialog, setShowAllOrdersDialog] = useState(false);
   const { serviceOrders: realtimeOrders, loading } = useSupabaseRealtime();
 
   // Transform Supabase data to match ServiceOrder interface
@@ -126,7 +128,10 @@ const Index = () => {
         />
         
         <main className="flex-1 px-6 py-6">
-          <DashboardOverview stats={dashboardStats} />
+        <DashboardOverview 
+          stats={dashboardStats} 
+          onTotalServiceOrdersClick={() => setShowAllOrdersDialog(true)}
+        />
           
           <section className="mt-8 slide-enter" style={{ animationDelay: '0.4s' }}>
             <div className="flex justify-between items-center mb-4">
@@ -159,6 +164,12 @@ const Index = () => {
           </section>
         </main>
       </div>
+      
+      <ServiceOrderFullTableDialog 
+        open={showAllOrdersDialog}
+        onOpenChange={setShowAllOrdersDialog}
+        serviceOrders={serviceOrders}
+      />
     </div>
   );
 };

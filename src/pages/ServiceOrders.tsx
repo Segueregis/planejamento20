@@ -124,10 +124,11 @@ const ServiceOrdersPage = () => {
   const filteredOrders = useMemo(() => {
     let filtered = serviceOrders;
 
-    // Filter by search term
+    // Filter by search term - busca por Número OS e OS Cliente
     if (searchTerm) {
       filtered = filtered.filter(order =>
         order.osPrisma.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        order.osMaximo.toLowerCase().includes(searchTerm.toLowerCase()) ||
         order.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
         order.technicians.some(tech => tech.toLowerCase().includes(searchTerm.toLowerCase())) ||
         order.workshop.toLowerCase().includes(searchTerm.toLowerCase())
@@ -204,7 +205,7 @@ const ServiceOrdersPage = () => {
               <div className="relative flex-1">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
                 <Input
-                  placeholder="Buscar ordens de serviço..."
+                  placeholder="Buscar por Número OS ou OS Cliente..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="pl-10"

@@ -78,4 +78,5 @@ export interface StatusCardProps {
     value: number;
     trend: "up" | "down" | "neutral";
   };
+  onClick?: () => void;
 }

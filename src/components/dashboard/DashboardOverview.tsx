@@ -25,10 +25,12 @@ const initialStats: DashboardStats = {
 
 interface DashboardOverviewProps {
   stats?: DashboardStats;
+  onTotalServiceOrdersClick?: () => void;
 }
 
 const DashboardOverview: React.FC<DashboardOverviewProps> = ({ 
-  stats = initialStats 
+  stats = initialStats,
+  onTotalServiceOrdersClick 
 }) => {
   return (
     <section className="space-y-6">
@@ -39,7 +41,8 @@ const DashboardOverview: React.FC<DashboardOverviewProps> = ({
             title="Total de OS" 
             value={stats.totalServiceOrders} 
             icon={Truck} 
-            status="info" 
+            status="info"
+            onClick={onTotalServiceOrdersClick}
           />
           <StatusCard
             title="OS Concluídas"
