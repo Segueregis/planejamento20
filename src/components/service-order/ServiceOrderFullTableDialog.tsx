@@ -131,21 +131,20 @@ const ServiceOrderFullTableDialog: React.FC<ServiceOrderFullTableDialogProps> = 
         return;
       }
 
-      // Format the scheduled date
-      const formattedDate = format(selectedDate, 'dd/MM/yyyy', { locale: ptBR });
+      const record = {
+        numero_os: selectedOrder.osPrisma,
+        os_cliente: selectedOrder.osMaximo || '',
+        denominacao_os: selectedOrder.description || '',
+        denominacao_oficina: selectedOrder.workshop || '',
+        denominacao_ativo: selectedOrder.location || '',
+        status: 'Programado',
+        created_by: user.id,
+        observacoes_servico: JSON.stringify({ scheduledDate: selectedDate.toISOString() })
+      } as const;
 
       const { error } = await supabase
         .from('ordens_servico')
-        .insert({
-          numero_os: selectedOrder.osPrisma,
-          os_cliente: selectedOrder.osMaximo || '',
-          denominacao_os: selectedOrder.description || '',
-          denominacao_oficina: selectedOrder.workshop || '',
-          denominacao_ativo: selectedOrder.sector || '',
-          status: 'Programado',
-          created_by: user.id,
-          observacoes_servico: `Data programada: ${formattedDate}`
-        });
+        .upsert(record, { onConflict: 'numero_os,created_by' });
 
       if (error) {
         console.error('Supabase error:', error);

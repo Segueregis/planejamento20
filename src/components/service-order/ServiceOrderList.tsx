@@ -50,14 +50,13 @@ const ServiceOrderList: React.FC<ServiceOrderListProps> = ({
         <table className="w-full">
           <thead>
             <tr className="bg-muted/50">
-              <th className="py-3 px-4 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">OS Prisma</th>
-              <th className="py-3 px-4 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">OS Máximo</th>
-              <th className="py-3 px-4 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Descrição</th>
+              <th className="py-3 px-4 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Número OS</th>
+              <th className="py-3 px-4 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">OS Cliente</th>
+              <th className="py-3 px-4 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Denominação OS</th>
               <th className="py-3 px-4 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Oficina</th>
-              <th className="py-3 px-4 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Técnico(s)</th>
-              <th className="py-3 px-4 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Local</th>
+              <th className="py-3 px-4 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Denominação Ativo</th>
               <th className="py-3 px-4 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Status</th>
-              <th className="py-3 px-4 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Data</th>
+              <th className="py-3 px-4 text-right text-xs font-medium text-muted-foreground uppercase tracking-wider">Técnico(s)</th>
               <th className="py-3 px-4 text-right text-xs font-medium text-muted-foreground uppercase tracking-wider">Ações</th>
             </tr>
           </thead>
@@ -74,15 +73,6 @@ const ServiceOrderList: React.FC<ServiceOrderListProps> = ({
                   <div className="text-sm truncate max-w-xs">{order.description}</div>
                 </td>
                 <td className="py-4 px-4 text-sm">{order.workshop}</td>
-                <td className="py-4 px-4 text-sm">
-                  <div className="flex flex-wrap gap-1">
-                    {order.technicians.map((technician, index) => (
-                      <span key={index} className="bg-muted px-2 py-1 rounded text-xs">
-                        {technician}
-                      </span>
-                    ))}
-                  </div>
-                </td>
                 <td className="py-4 px-4 text-sm">{order.location}</td>
                 <td className="py-4 px-4">
                   <div className="flex items-center">
@@ -93,7 +83,15 @@ const ServiceOrderList: React.FC<ServiceOrderListProps> = ({
                     <span className="text-sm">{order.status}</span>
                   </div>
                 </td>
-                <td className="py-4 px-4 text-sm">{order.scheduledDate || order.createdDate}</td>
+                <td className="py-4 px-4 text-right">
+                  <div className="flex flex-wrap gap-1 justify-end">
+                    {order.technicians.map((technician, index) => (
+                      <span key={index} className="bg-muted px-2 py-1 rounded text-xs">
+                        {technician}
+                      </span>
+                    ))}
+                  </div>
+                </td>
                 <td className="py-4 px-4 text-right">
                   {onDeleteServiceOrder && (
                     <button 

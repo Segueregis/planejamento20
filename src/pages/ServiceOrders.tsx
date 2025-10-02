@@ -106,19 +106,34 @@ const ServiceOrdersPage = () => {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date()); // Default to today
 
   // Transform Supabase data to match ServiceOrder interface
-  const serviceOrders: ServiceOrder[] = realtimeOrders.map(order => ({
-    id: order.id,
-    osPrisma: order.numero_os,
-    osMaximo: order.numero_os_cliente || '',
-    description: order.denominacao_os || order.denominacao_ativo || '',
-    workshop: order.denominacao_oficina || 'Não especificado',
-    technicians: order.denominacao_solicitante ? [order.denominacao_solicitante] : ['Não especificado'],
-    location: order.ativo || 'Não especificado',
-    sector: order.denominacao_unidade_negocio || 'Não especificado',
-    status: order.status as ServiceOrderStatus || ServiceOrderStatus.WAITING_SCHEDULE,
-    createdDate: new Date(order.created_at).toLocaleDateString('pt-BR'),
-    scheduledDate: new Date().toLocaleDateString('pt-BR') // TODO: Add scheduled_date field to database
-  }));
+  const serviceOrders: ServiceOrder[] = realtimeOrders.map(order => {
+    // Try to parse scheduled date from observacoes_servico JSON
+    let scheduledDateStr: string | undefined;
+    try {
+      if (order.observacoes_servico) {
+        const parsed = JSON.parse(order.observacoes_servico as string);
+        if (parsed?.scheduledDate) {
+          scheduledDateStr = new Date(parsed.scheduledDate).toLocaleDateString('pt-BR');
+        }
+      }
+    } catch (_) {
+      // ignore parsing errors
+    }
+
+    return {
+      id: order.id,
+      osPrisma: order.numero_os,
+      osMaximo: (order.os_cliente as string) || '',
+      description: (order.denominacao_os as string) || '',
+      workshop: (order.denominacao_oficina as string) || 'Não especificado',
+      technicians: [], // técnicos serão incluídos manualmente
+      location: (order.denominacao_ativo as string) || 'Não especificado',
+      sector: (order.denominacao_unidade_negocio as string) || 'Não especificado',
+      status: (order.status as ServiceOrderStatus) || ServiceOrderStatus.WAITING_SCHEDULE,
+      createdDate: new Date(order.created_at as string).toLocaleDateString('pt-BR'),
+      scheduledDate: scheduledDateStr
+    };
+  });
 
   // Filter service orders based on search and selected date
   const filteredOrders = useMemo(() => {
