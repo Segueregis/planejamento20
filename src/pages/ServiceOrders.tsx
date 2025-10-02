@@ -150,11 +150,16 @@ const ServiceOrdersPage = () => {
       );
     }
 
-    // Filter by selected date
+    // Filter by selected date - mostrar apenas OSs programadas para o dia selecionado
     if (selectedDate) {
       filtered = filtered.filter(order => {
         if (!order.scheduledDate) return false;
-        const orderDate = new Date(order.scheduledDate.split('/').reverse().join('-'));
+        
+        // Parse date in DD/MM/YYYY format
+        const [day, month, year] = order.scheduledDate.split('/');
+        const orderDate = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+        
+        // Compare dates (ignoring time)
         return isSameDay(orderDate, selectedDate);
       });
     }
