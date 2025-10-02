@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -13,10 +13,22 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { Button } from "@/components/ui/button";
 import { ServiceOrder, ServiceOrderStatus } from '@/types';
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Search } from "lucide-react";
+import { Search, Calendar as CalendarIcon } from "lucide-react";
+import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
+import { cn } from "@/lib/utils";
 
 // Status color helper function
 const getStatusColor = (status: ServiceOrderStatus) => {
@@ -53,6 +65,36 @@ const ServiceOrderFullTableDialog: React.FC<ServiceOrderFullTableDialogProps> = 
 }) => {
   const [numeroOSSearch, setNumeroOSSearch] = useState('');
   const [osClienteSearch, setOSClienteSearch] = useState('');
+  const [selectedOrder, setSelectedOrder] = useState<ServiceOrder | null>(null);
+  const [selectedDate, setSelectedDate] = useState<Date>();
+  const [isScheduling, setIsScheduling] = useState(false);
+  const tableContainerRef = useRef<HTMLDivElement>(null);
+  const scrollbarRef = useRef<HTMLDivElement>(null);
+  const { toast } = useToast();
+
+  // Sync horizontal scrolling between table and scrollbar
+  useEffect(() => {
+    const tableContainer = tableContainerRef.current;
+    const scrollbar = scrollbarRef.current;
+    
+    if (!tableContainer || !scrollbar) return;
+
+    const handleTableScroll = () => {
+      scrollbar.scrollLeft = tableContainer.scrollLeft;
+    };
+
+    const handleScrollbarScroll = () => {
+      tableContainer.scrollLeft = scrollbar.scrollLeft;
+    };
+
+    tableContainer.addEventListener('scroll', handleTableScroll);
+    scrollbar.addEventListener('scroll', handleScrollbarScroll);
+
+    return () => {
+      tableContainer.removeEventListener('scroll', handleTableScroll);
+      scrollbar.removeEventListener('scroll', handleScrollbarScroll);
+    };
+  }, []);
 
   // Filter service orders based on search terms
   const filteredOrders = useMemo(() => {
@@ -72,6 +114,57 @@ const ServiceOrderFullTableDialog: React.FC<ServiceOrderFullTableDialogProps> = 
 
     return filtered;
   }, [serviceOrders, numeroOSSearch, osClienteSearch]);
+
+  const handleScheduleOrder = async () => {
+    if (!selectedOrder || !selectedDate) return;
+
+    setIsScheduling(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        toast({
+          title: "Erro",
+          description: "Você precisa estar autenticado",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const { error } = await supabase
+        .from('ordens_servico')
+        .insert({
+          numero_os: selectedOrder.osPrisma,
+          os_cliente: selectedOrder.osMaximo || null,
+          denominacao_os: selectedOrder.description,
+          denominacao_oficina: selectedOrder.workshop,
+          denominacao_ativo: selectedOrder.location,
+          status: ServiceOrderStatus.SCHEDULED,
+          created_by: user.id,
+          // Store the scheduled date in ISO format
+          observacoes_servico: JSON.stringify({ scheduledDate: selectedDate.toISOString() })
+        });
+
+      if (error) throw error;
+
+      toast({
+        title: "Sucesso",
+        description: "OS incluída na programação",
+      });
+
+      setSelectedOrder(null);
+      setSelectedDate(undefined);
+    } catch (error) {
+      console.error('Error scheduling order:', error);
+      toast({
+        title: "Erro",
+        description: "Falha ao incluir OS na programação",
+        variant: "destructive",
+      });
+    } finally {
+      setIsScheduling(false);
+    }
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -102,9 +195,12 @@ const ServiceOrderFullTableDialog: React.FC<ServiceOrderFullTableDialogProps> = 
           </div>
         </div>
         
-        {/* Table Container with both horizontal and vertical scroll */}
-        <div className="flex-1 overflow-auto border rounded-md">
-          <div className="min-w-full">
+        {/* Table Container with vertical scroll only */}
+        <div 
+          ref={tableContainerRef}
+          className="flex-1 overflow-y-auto overflow-x-hidden border rounded-md"
+        >
+          <div className="overflow-x-auto">
             <Table>
               <TableHeader className="sticky top-0 bg-background z-10">
                 <TableRow>
@@ -117,11 +213,12 @@ const ServiceOrderFullTableDialog: React.FC<ServiceOrderFullTableDialogProps> = 
                   <TableHead className="min-w-[180px]">Unidade Negócio</TableHead>
                   <TableHead className="min-w-[140px]">Status</TableHead>
                   <TableHead className="min-w-[120px]">Data Criação</TableHead>
+                  <TableHead className="min-w-[150px]">Ações</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {filteredOrders.map((order) => (
-                  <TableRow key={order.id} className="cursor-pointer hover:bg-muted/50">
+                  <TableRow key={order.id} className="hover:bg-muted/50">
                     <TableCell className="font-medium">{order.osPrisma}</TableCell>
                     <TableCell>{order.osMaximo || '-'}</TableCell>
                     <TableCell className="max-w-[250px]" title={order.description}>
@@ -141,11 +238,44 @@ const ServiceOrderFullTableDialog: React.FC<ServiceOrderFullTableDialogProps> = 
                       </Badge>
                     </TableCell>
                     <TableCell>{order.createdDate}</TableCell>
+                    <TableCell>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => setSelectedOrder(order)}
+                          >
+                            <CalendarIcon className="h-4 w-4 mr-2" />
+                            Programar
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar
+                            mode="single"
+                            selected={selectedDate}
+                            onSelect={setSelectedDate}
+                            initialFocus
+                            className={cn("p-3 pointer-events-auto")}
+                            locale={ptBR}
+                          />
+                          <div className="p-3 border-t">
+                            <Button 
+                              onClick={handleScheduleOrder}
+                              disabled={!selectedDate || isScheduling}
+                              className="w-full"
+                            >
+                              {isScheduling ? "Incluindo..." : "Incluir na Programação"}
+                            </Button>
+                          </div>
+                        </PopoverContent>
+                      </Popover>
+                    </TableCell>
                   </TableRow>
                 ))}
                 {filteredOrders.length === 0 && (
                   <TableRow>
-                    <TableCell colSpan={9} className="text-center py-8 text-muted-foreground">
+                    <TableCell colSpan={10} className="text-center py-8 text-muted-foreground">
                       Nenhuma ordem de serviço encontrada
                     </TableCell>
                   </TableRow>
@@ -153,6 +283,15 @@ const ServiceOrderFullTableDialog: React.FC<ServiceOrderFullTableDialogProps> = 
               </TableBody>
             </Table>
           </div>
+        </div>
+
+        {/* Floating horizontal scrollbar */}
+        <div 
+          ref={scrollbarRef}
+          className="overflow-x-auto overflow-y-hidden border-t bg-background"
+          style={{ height: '20px' }}
+        >
+          <div style={{ width: '1600px', height: '1px' }} />
         </div>
       </DialogContent>
     </Dialog>
