@@ -42,7 +42,7 @@ const UserProfile: React.FC = () => {
         </div>
         
         <div>
-          <p className="text-xs font-medium mb-2">Roles:</p>
+          <p className="text-xs font-medium mb-2">Funções:</p>
           <div className="flex flex-wrap gap-1">
             {userProfile.roles?.map((role) => (
               <Badge
@@ -54,7 +54,7 @@ const UserProfile: React.FC = () => {
               </Badge>
             )) || (
               <Badge variant="outline" className="text-xs">
-                Nenhuma role
+                Nenhuma função
               </Badge>
             )}
           </div>

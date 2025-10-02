@@ -136,7 +136,10 @@ const Index = () => {
           <section className="mt-8 slide-enter" style={{ animationDelay: '0.4s' }}>
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-2xl font-semibold">Ordens em Destaque</h2>
-              <button className="text-sm text-primary hover:underline">
+              <button 
+                onClick={() => setShowAllOrdersDialog(true)}
+                className="text-sm text-primary hover:underline"
+              >
                 Ver todas
               </button>
             </div>
